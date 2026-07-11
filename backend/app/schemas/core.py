@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional, List
 
 class CountryBase(BaseModel):
@@ -122,6 +122,46 @@ class SupplierBase(BaseModel):
 class Supplier(SupplierBase):
     class Config:
         from_attributes = True
+
+class SupplierRiskSummary(BaseModel):
+    risk_probability: Optional[float] = None
+    business_impact: Optional[float] = None
+    risk_level: Optional[str] = None
+    last_updated: Optional[str] = None
+
+class SupplierSummary(SupplierBase):
+    risk_score: Optional[SupplierRiskSummary] = None
+
+class SupplierProduct(BaseModel):
+    product_id: str
+    component: Optional[str] = None
+
+class SupplierNews(BaseModel):
+    id: int
+    date: Optional[str] = None
+    headline: Optional[str] = None
+    country: Optional[str] = None
+    risk_category: Optional[str] = None
+    severity: Optional[str] = None
+    status: Optional[str] = None
+
+class SupplierLogistics(LogisticsBase):
+    class Config:
+        from_attributes = True
+
+class SupplierRelationshipSummary(BaseModel):
+    source_supplier: str
+    target_supplier: str
+    dependency_strength: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+class SupplierDetail(SupplierSummary):
+    products: List[SupplierProduct] = Field(default_factory=list)
+    recent_news: List[SupplierNews] = Field(default_factory=list)
+    logistics_relationships: List[SupplierLogistics] = Field(default_factory=list)
+    supplier_relationships: List[SupplierRelationshipSummary] = Field(default_factory=list)
 
 class SupplierRelationshipBase(BaseModel):
     source_supplier: str
