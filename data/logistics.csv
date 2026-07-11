@@ -1,0 +1,41 @@
+route_id,supplier_id,origin_country,destination_country,origin_port,destination_port,transport_method,transit_time_days
+1,S001,Taiwan,Vietnam,Sydney,Hai Phong,Sea,16
+2,S002,China,Vietnam,Chennai,Hai Phong,Sea,11
+3,S003,South Korea,Vietnam,Sydney,Hai Phong,Road,11
+4,S004,Vietnam,Vietnam,Shanghai,Hai Phong,Rail,21
+5,S005,Japan,Vietnam,Kaohsiung,Hai Phong,Sea,26
+6,S006,Malaysia,Vietnam,Singapore,Hai Phong,Sea,22
+7,S007,India,Vietnam,Singapore,Hai Phong,Rail,10
+8,S008,Germany,Vietnam,Kaohsiung,Hai Phong,Air,7
+9,S009,USA,Vietnam,Singapore,Hai Phong,Rail,7
+10,S010,Australia,Vietnam,Kaohsiung,Hai Phong,Air,7
+11,S011,Taiwan,Vietnam,Shanghai,Hai Phong,Air,15
+12,S012,China,Vietnam,Chennai,Hai Phong,Rail,24
+13,S013,South Korea,Vietnam,Chennai,Hai Phong,Road,11
+14,S014,Vietnam,Vietnam,Shanghai,Hai Phong,Air,9
+15,S015,Japan,Vietnam,Hamburg,Hai Phong,Road,24
+16,S016,Malaysia,Vietnam,Hamburg,Hai Phong,Sea,24
+17,S017,India,Vietnam,Chennai,Hai Phong,Road,4
+18,S018,Germany,Vietnam,Singapore,Hai Phong,Sea,10
+19,S019,USA,Vietnam,Singapore,Hai Phong,Road,15
+20,S020,Australia,Vietnam,Kaohsiung,Hai Phong,Air,19
+21,S021,Taiwan,Vietnam,Singapore,Hai Phong,Air,22
+22,S022,China,Vietnam,Busan,Hai Phong,Rail,10
+23,S023,South Korea,Vietnam,Busan,Hai Phong,Air,4
+24,S024,Vietnam,Vietnam,Shanghai,Hai Phong,Air,7
+25,S025,Japan,Vietnam,Hamburg,Hai Phong,Road,21
+26,S026,Malaysia,Vietnam,Hamburg,Hai Phong,Rail,16
+27,S027,India,Vietnam,Kaohsiung,Hai Phong,Rail,16
+28,S028,Germany,Vietnam,Hamburg,Hai Phong,Sea,24
+29,S029,USA,Vietnam,Sydney,Hai Phong,Rail,10
+30,S030,Australia,Vietnam,Chennai,Hai Phong,Air,16
+31,S031,Taiwan,Vietnam,Kaohsiung,Hai Phong,Road,21
+32,S032,China,Vietnam,Shanghai,Hai Phong,Sea,30
+33,S033,South Korea,Vietnam,Sydney,Hai Phong,Road,25
+34,S034,Vietnam,Vietnam,Los Angeles,Hai Phong,Sea,21
+35,S035,Japan,Vietnam,Hamburg,Hai Phong,Road,2
+36,S036,Malaysia,Vietnam,Kaohsiung,Hai Phong,Sea,9
+37,S037,India,Vietnam,Shanghai,Hai Phong,Road,26
+38,S038,Germany,Vietnam,Hamburg,Hai Phong,Rail,20
+39,S039,USA,Vietnam,Shanghai,Hai Phong,Sea,26
+40,S040,Australia,Vietnam,Busan,Hai Phong,Air,17

@@ -1,0 +1,41 @@
+supplier_id,supplier_name,tier,component,country,city,latitude,longitude,criticality,lead_time_days,capacity,inventory_buffer,transport_mode,backup_supplier,status
+S001,Taiwan Tech 1,1,SoC,Taiwan,Hsinchu,17.5484,72.0009,Medium,20,19628,9,Sea,S006,Active
+S002,China Tech 2,2,Display,China,Shanghai,20.903,141.3744,High,42,32651,6,Sea,S007,Active
+S003,South Tech 3,3,Battery,South Korea,Seoul,-31.5674,88.6129,Low,6,41781,11,Road,S008,Active
+S004,Vietnam Tech 4,1,Camera,Vietnam,Ho Chi Minh City,-20.1603,117.1413,High,15,32696,15,Rail,S009,Active
+S005,Japan Tech 5,2,Memory,Japan,Tokyo,-26.0068,146.577,Medium,11,11078,17,Sea,S010,Active
+S006,Malaysia Tech 6,3,PCB,Malaysia,Kuala Lumpur,-7.6919,97.5165,Medium,7,35108,22,Sea,S011,Active
+S007,India Tech 7,1,Sensor,India,Bengaluru,47.5804,100.2828,Low,23,46198,24,Rail,S012,Active
+S008,Germany Tech 8,2,Glass,Germany,Berlin,11.9617,126.3657,High,19,23965,7,Air,S013,Active
+S009,USA Tech 9,3,Connector,USA,Austin,37.9835,100.4101,Medium,45,28909,10,Rail,S014,Active
+S010,Australia Tech 10,1,Packaging,Australia,Melbourne,-8.0256,123.614,Low,9,44920,25,Air,S015,Active
+S011,Taiwan Tech 11,2,SoC,Taiwan,Hsinchu,8.0726,89.5849,Medium,29,22691,25,Air,S016,Active
+S012,China Tech 12,3,Display,China,Shanghai,21.6153,137.4282,High,19,7103,30,Rail,S017,Active
+S013,South Tech 13,1,Battery,South Korea,Seoul,-3.8952,75.2951,Low,25,18934,25,Road,S018,Active
+S014,Vietnam Tech 14,2,Camera,Vietnam,Ho Chi Minh City,-4.3931,143.1638,Medium,14,22359,9,Air,S019,Active
+S015,Japan Tech 15,3,Memory,Japan,Tokyo,27.049,113.1182,Low,42,33077,23,Road,S020,Active
+S016,Malaysia Tech 16,1,PCB,Malaysia,Kuala Lumpur,-7.4203,149.7861,High,37,37343,7,Sea,S021,Active
+S017,India Tech 17,2,Sensor,India,Bengaluru,37.4993,82.2273,High,32,44086,7,Road,S022,Active
+S018,Germany Tech 18,3,Glass,Germany,Berlin,-5.6543,149.6897,Low,21,41256,5,Sea,S023,Active
+S019,USA Tech 19,1,Connector,USA,Austin,21.3539,112.9576,Medium,26,12310,14,Road,S024,Active
+S020,Australia Tech 20,2,Packaging,Australia,Melbourne,-25.7658,70.2596,Low,21,37806,29,Air,S025,Active
+S021,Taiwan Tech 21,3,SoC,Taiwan,Hsinchu,5.6914,78.5129,Low,24,46874,21,Air,S026,Active
+S022,China Tech 22,1,Display,China,Shanghai,-26.2445,131.0009,Low,38,5037,24,Rail,S027,Active
+S023,South Tech 23,2,Battery,South Korea,Seoul,3.9745,78.9494,Medium,24,20692,6,Air,S028,Active
+S024,Vietnam Tech 24,3,Camera,Vietnam,Ho Chi Minh City,39.0209,145.756,High,36,9535,29,Air,S029,Active
+S025,Japan Tech 25,1,Memory,Japan,Tokyo,-28.4448,108.0226,Low,15,22370,21,Road,S030,Active
+S026,Malaysia Tech 26,2,PCB,Malaysia,Kuala Lumpur,46.7927,144.3131,Low,17,25428,17,Rail,S031,Active
+S027,India Tech 27,3,Sensor,India,Bengaluru,-0.571,111.4061,High,20,19725,7,Rail,S032,Active
+S028,Germany Tech 28,1,Glass,Germany,Berlin,-38.1069,114.3137,Low,19,5471,7,Sea,S033,Active
+S029,USA Tech 29,2,Connector,USA,Austin,-19.3952,142.4336,Medium,9,38695,12,Rail,S034,Active
+S030,Australia Tech 30,3,Packaging,Australia,Melbourne,20.208,87.1389,High,41,42762,20,Air,S035,Active
+S031,Taiwan Tech 31,1,SoC,Taiwan,Hsinchu,30.6157,134.5998,High,11,11352,26,Road,S036,Active
+S032,China Tech 32,2,Display,China,Shanghai,-8.1132,102.8882,Low,8,49129,25,Sea,S037,Active
+S033,South Tech 33,3,Battery,South Korea,Seoul,-34.5449,128.2571,High,20,17556,11,Road,S038,Active
+S034,Vietnam Tech 34,1,Camera,Vietnam,Ho Chi Minh City,-27.3836,84.679,Medium,20,9940,19,Sea,S039,Active
+S035,Japan Tech 35,2,Memory,Japan,Tokyo,-35.4471,149.9426,High,10,20491,10,Road,S040,Active
+S036,Malaysia Tech 36,3,PCB,Malaysia,Kuala Lumpur,3.7077,87.0998,Medium,8,15789,17,Sea,S001,Active
+S037,India Tech 37,1,Sensor,India,Bengaluru,48.6778,91.2162,Medium,23,32722,27,Road,S002,Active
+S038,Germany Tech 38,2,Glass,Germany,Berlin,-26.0683,93.7366,High,42,40533,6,Rail,S003,Active
+S039,USA Tech 39,3,Connector,USA,Austin,-34.8551,116.7342,Low,38,15317,6,Sea,S004,Active
+S040,Australia Tech 40,1,Packaging,Australia,Melbourne,36.6208,75.4817,High,20,31461,8,Air,S005,Active

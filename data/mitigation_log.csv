@@ -1,0 +1,61 @@
+supplier_id,issue,recommendation,priority,status,timestamp
+S017,Regulatory,Use backup supplier and increase buffer stock,High,Closed,2026-07-08T05:14:12.378874
+S010,Climate,Use backup supplier and increase buffer stock,High,Closed,2026-07-08T05:14:12.378884
+S032,Pandemic,Use backup supplier and increase buffer stock,Low,Closed,2026-07-08T05:14:12.378887
+S029,Raw Material Shortage,Use backup supplier and increase buffer stock,Low,Closed,2026-07-08T05:14:12.378890
+S040,Cybersecurity,Use backup supplier and increase buffer stock,Low,In Progress,2026-07-08T05:14:12.378892
+S010,Pandemic,Use backup supplier and increase buffer stock,High,In Progress,2026-07-08T05:14:12.378894
+S029,Financial,Use backup supplier and increase buffer stock,Medium,Closed,2026-07-08T05:14:12.378896
+S004,Cybersecurity,Use backup supplier and increase buffer stock,Low,Open,2026-07-08T05:14:12.378898
+S020,Pandemic,Use backup supplier and increase buffer stock,Medium,Open,2026-07-08T05:14:12.378900
+S004,Cybersecurity,Use backup supplier and increase buffer stock,Medium,Open,2026-07-08T05:14:12.378902
+S006,Raw Material Shortage,Use backup supplier and increase buffer stock,Low,Closed,2026-07-08T05:14:12.378905
+S025,Pandemic,Use backup supplier and increase buffer stock,Low,Closed,2026-07-08T05:14:12.378907
+S003,Pandemic,Use backup supplier and increase buffer stock,Low,Closed,2026-07-08T05:14:12.378910
+S013,Cybersecurity,Use backup supplier and increase buffer stock,Low,In Progress,2026-07-08T05:14:12.378912
+S033,Logistics,Use backup supplier and increase buffer stock,High,In Progress,2026-07-08T05:14:12.378914
+S007,Cybersecurity,Use backup supplier and increase buffer stock,Low,Open,2026-07-08T05:14:12.378916
+S033,Logistics,Use backup supplier and increase buffer stock,High,Open,2026-07-08T05:14:12.378919
+S029,Pandemic,Use backup supplier and increase buffer stock,Low,Closed,2026-07-08T05:14:12.378921
+S040,Logistics,Use backup supplier and increase buffer stock,Medium,In Progress,2026-07-08T05:14:12.378923
+S019,Labor Strike,Use backup supplier and increase buffer stock,Medium,In Progress,2026-07-08T05:14:12.378925
+S039,Geopolitical,Use backup supplier and increase buffer stock,Low,Closed,2026-07-08T05:14:12.378927
+S022,Climate,Use backup supplier and increase buffer stock,Medium,Open,2026-07-08T05:14:12.378929
+S036,Labor Strike,Use backup supplier and increase buffer stock,Medium,In Progress,2026-07-08T05:14:12.378931
+S039,Logistics,Use backup supplier and increase buffer stock,Medium,Open,2026-07-08T05:14:12.378933
+S038,Logistics,Use backup supplier and increase buffer stock,Medium,In Progress,2026-07-08T05:14:12.378935
+S026,Logistics,Use backup supplier and increase buffer stock,Low,Closed,2026-07-08T05:14:12.378938
+S006,Financial,Use backup supplier and increase buffer stock,Low,In Progress,2026-07-08T05:14:12.378940
+S022,Logistics,Use backup supplier and increase buffer stock,Low,Closed,2026-07-08T05:14:12.378942
+S034,Climate,Use backup supplier and increase buffer stock,Low,Closed,2026-07-08T05:14:12.378944
+S028,Operational,Use backup supplier and increase buffer stock,Medium,Open,2026-07-08T05:14:12.378946
+S024,Financial,Use backup supplier and increase buffer stock,High,Open,2026-07-08T05:14:12.378948
+S022,Pandemic,Use backup supplier and increase buffer stock,High,Open,2026-07-08T05:14:12.378950
+S009,Logistics,Use backup supplier and increase buffer stock,High,In Progress,2026-07-08T05:14:12.378952
+S007,Operational,Use backup supplier and increase buffer stock,Low,Closed,2026-07-08T05:14:12.378954
+S034,Geopolitical,Use backup supplier and increase buffer stock,Low,In Progress,2026-07-08T05:14:12.378956
+S040,Logistics,Use backup supplier and increase buffer stock,Low,In Progress,2026-07-08T05:14:12.378958
+S010,Logistics,Use backup supplier and increase buffer stock,High,Closed,2026-07-08T05:14:12.378960
+S040,Logistics,Use backup supplier and increase buffer stock,Low,In Progress,2026-07-08T05:14:12.378967
+S003,Labor Strike,Use backup supplier and increase buffer stock,Medium,Closed,2026-07-08T05:14:12.378971
+S016,Pandemic,Use backup supplier and increase buffer stock,Low,In Progress,2026-07-08T05:14:12.378974
+S029,Regulatory,Use backup supplier and increase buffer stock,Low,Open,2026-07-08T05:14:12.378978
+S020,Pandemic,Use backup supplier and increase buffer stock,High,In Progress,2026-07-08T05:14:12.378981
+S037,Pandemic,Use backup supplier and increase buffer stock,Medium,In Progress,2026-07-08T05:14:12.378985
+S025,Operational,Use backup supplier and increase buffer stock,Low,In Progress,2026-07-08T05:14:12.378989
+S011,Regulatory,Use backup supplier and increase buffer stock,Low,Open,2026-07-08T05:14:12.378993
+S017,Geopolitical,Use backup supplier and increase buffer stock,Low,In Progress,2026-07-08T05:14:12.378995
+S024,Operational,Use backup supplier and increase buffer stock,High,Closed,2026-07-08T05:14:12.378997
+S034,Climate,Use backup supplier and increase buffer stock,Medium,Open,2026-07-08T05:14:12.378998
+S011,Financial,Use backup supplier and increase buffer stock,Medium,Closed,2026-07-08T05:14:12.379000
+S010,Labor Strike,Use backup supplier and increase buffer stock,High,Open,2026-07-08T05:14:12.379002
+S029,Cybersecurity,Use backup supplier and increase buffer stock,High,In Progress,2026-07-08T05:14:12.379004
+S004,Labor Strike,Use backup supplier and increase buffer stock,Low,In Progress,2026-07-08T05:14:12.379006
+S016,Labor Strike,Use backup supplier and increase buffer stock,High,In Progress,2026-07-08T05:14:12.379008
+S015,Geopolitical,Use backup supplier and increase buffer stock,Medium,Open,2026-07-08T05:14:12.379011
+S022,Logistics,Use backup supplier and increase buffer stock,High,Open,2026-07-08T05:14:12.379013
+S019,Pandemic,Use backup supplier and increase buffer stock,Low,Open,2026-07-08T05:14:12.379015
+S031,Pandemic,Use backup supplier and increase buffer stock,Low,Open,2026-07-08T05:14:12.379017
+S006,Geopolitical,Use backup supplier and increase buffer stock,Medium,Open,2026-07-08T05:14:12.379019
+S010,Operational,Use backup supplier and increase buffer stock,Low,Closed,2026-07-08T05:14:12.379021
+S034,Labor Strike,Use backup supplier and increase buffer stock,High,In Progress,2026-07-08T05:14:12.379024

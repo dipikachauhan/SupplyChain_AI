@@ -1,0 +1,9 @@
+warehouse_id,country,city,storage_capacity,inventory
+WH01,Taiwan,Hsinchu,164264,74451
+WH02,China,Shenzhen,73918,71605
+WH03,South Korea,Seoul,141215,63523
+WH04,Vietnam,Hanoi,137374,52081
+WH05,Japan,Tokyo,77420,31079
+WH06,Malaysia,Penang,136456,63955
+WH07,India,Bengaluru,179884,47777
+WH08,Germany,Munich,154976,14809

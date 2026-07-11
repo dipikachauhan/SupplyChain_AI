@@ -1,0 +1,121 @@
+date,headline,country,risk_category,severity,affected_supplier,status
+2025-01-01,Geopolitical event impacts Glass supply in Germany,Germany,Geopolitical,10,S008,Open
+2025-01-02,Financial event impacts SoC supply in Taiwan,Taiwan,Financial,9,S011,Open
+2025-01-03,Labor Strike event impacts PCB supply in Malaysia,Malaysia,Labor Strike,2,S036,Open
+2025-01-04,Pandemic event impacts Glass supply in Germany,Germany,Pandemic,2,S008,Resolved
+2025-01-05,Pandemic event impacts Packaging supply in Australia,Australia,Pandemic,5,S010,Resolved
+2025-01-06,Labor Strike event impacts Glass supply in Germany,Germany,Labor Strike,8,S018,Monitoring
+2025-01-07,Pandemic event impacts PCB supply in Malaysia,Malaysia,Pandemic,9,S016,Open
+2025-01-08,Regulatory event impacts Memory supply in Japan,Japan,Regulatory,10,S025,Resolved
+2025-01-09,Climate event impacts Connector supply in USA,USA,Climate,5,S009,Monitoring
+2025-01-10,Operational event impacts Display supply in China,China,Operational,5,S022,Open
+2025-01-11,Financial event impacts Connector supply in USA,USA,Financial,10,S019,Resolved
+2025-01-12,Logistics event impacts Display supply in China,China,Logistics,8,S032,Resolved
+2025-01-13,Cybersecurity event impacts SoC supply in Taiwan,Taiwan,Cybersecurity,6,S031,Resolved
+2025-01-14,Labor Strike event impacts Memory supply in Japan,Japan,Labor Strike,8,S035,Monitoring
+2025-01-15,Regulatory event impacts Battery supply in South Korea,South Korea,Regulatory,10,S013,Monitoring
+2025-01-16,Labor Strike event impacts Memory supply in Japan,Japan,Labor Strike,1,S015,Monitoring
+2025-01-17,Labor Strike event impacts SoC supply in Taiwan,Taiwan,Labor Strike,7,S031,Resolved
+2025-01-18,Pandemic event impacts Packaging supply in Australia,Australia,Pandemic,1,S010,Open
+2025-01-19,Raw Material Shortage event impacts Battery supply in South Korea,South Korea,Raw Material Shortage,6,S033,Open
+2025-01-20,Climate event impacts Connector supply in USA,USA,Climate,9,S029,Monitoring
+2025-01-21,Logistics event impacts SoC supply in Taiwan,Taiwan,Logistics,7,S001,Resolved
+2025-01-22,Climate event impacts Packaging supply in Australia,Australia,Climate,8,S010,Monitoring
+2025-01-23,Raw Material Shortage event impacts Display supply in China,China,Raw Material Shortage,7,S022,Resolved
+2025-01-24,Cybersecurity event impacts PCB supply in Malaysia,Malaysia,Cybersecurity,9,S006,Monitoring
+2025-01-25,Pandemic event impacts SoC supply in Taiwan,Taiwan,Pandemic,9,S021,Open
+2025-01-26,Climate event impacts Packaging supply in Australia,Australia,Climate,4,S040,Resolved
+2025-01-27,Regulatory event impacts Connector supply in USA,USA,Regulatory,2,S019,Monitoring
+2025-01-28,Climate event impacts Sensor supply in India,India,Climate,8,S007,Open
+2025-01-29,Geopolitical event impacts Packaging supply in Australia,Australia,Geopolitical,1,S020,Monitoring
+2025-01-30,Financial event impacts Camera supply in Vietnam,Vietnam,Financial,6,S004,Monitoring
+2025-01-31,Logistics event impacts Glass supply in Germany,Germany,Logistics,4,S028,Resolved
+2025-02-01,Raw Material Shortage event impacts Sensor supply in India,India,Raw Material Shortage,3,S027,Open
+2025-02-02,Climate event impacts Display supply in China,China,Climate,10,S012,Monitoring
+2025-02-03,Regulatory event impacts Packaging supply in Australia,Australia,Regulatory,8,S040,Resolved
+2025-02-04,Regulatory event impacts Packaging supply in Australia,Australia,Regulatory,8,S010,Resolved
+2025-02-05,Pandemic event impacts Sensor supply in India,India,Pandemic,5,S017,Resolved
+2025-02-06,Pandemic event impacts SoC supply in Taiwan,Taiwan,Pandemic,5,S001,Resolved
+2025-02-07,Logistics event impacts Memory supply in Japan,Japan,Logistics,2,S035,Monitoring
+2025-02-08,Raw Material Shortage event impacts Battery supply in South Korea,South Korea,Raw Material Shortage,5,S023,Resolved
+2025-02-09,Financial event impacts Glass supply in Germany,Germany,Financial,8,S028,Monitoring
+2025-02-10,Labor Strike event impacts Battery supply in South Korea,South Korea,Labor Strike,8,S013,Open
+2025-02-11,Labor Strike event impacts PCB supply in Malaysia,Malaysia,Labor Strike,10,S016,Monitoring
+2025-02-12,Financial event impacts Sensor supply in India,India,Financial,5,S037,Open
+2025-02-13,Financial event impacts PCB supply in Malaysia,Malaysia,Financial,1,S026,Resolved
+2025-02-14,Raw Material Shortage event impacts Camera supply in Vietnam,Vietnam,Raw Material Shortage,8,S004,Monitoring
+2025-02-15,Raw Material Shortage event impacts Memory supply in Japan,Japan,Raw Material Shortage,6,S015,Open
+2025-02-16,Raw Material Shortage event impacts Battery supply in South Korea,South Korea,Raw Material Shortage,5,S013,Resolved
+2025-02-17,Climate event impacts Connector supply in USA,USA,Climate,1,S009,Monitoring
+2025-02-18,Geopolitical event impacts Connector supply in USA,USA,Geopolitical,10,S029,Monitoring
+2025-02-19,Climate event impacts Connector supply in USA,USA,Climate,5,S009,Monitoring
+2025-02-20,Logistics event impacts Sensor supply in India,India,Logistics,4,S027,Open
+2025-02-21,Cybersecurity event impacts Memory supply in Japan,Japan,Cybersecurity,9,S035,Resolved
+2025-02-22,Logistics event impacts Glass supply in Germany,Germany,Logistics,5,S018,Monitoring
+2025-02-23,Cybersecurity event impacts Connector supply in USA,USA,Cybersecurity,2,S019,Monitoring
+2025-02-24,Logistics event impacts Memory supply in Japan,Japan,Logistics,4,S005,Resolved
+2025-02-25,Operational event impacts PCB supply in Malaysia,Malaysia,Operational,6,S026,Open
+2025-02-26,Geopolitical event impacts PCB supply in Malaysia,Malaysia,Geopolitical,5,S026,Resolved
+2025-02-27,Pandemic event impacts Glass supply in Germany,Germany,Pandemic,6,S008,Resolved
+2025-02-28,Raw Material Shortage event impacts Sensor supply in India,India,Raw Material Shortage,7,S017,Resolved
+2025-03-01,Climate event impacts Camera supply in Vietnam,Vietnam,Climate,4,S024,Monitoring
+2025-03-02,Raw Material Shortage event impacts Display supply in China,China,Raw Material Shortage,9,S002,Monitoring
+2025-03-03,Regulatory event impacts Packaging supply in Australia,Australia,Regulatory,2,S040,Resolved
+2025-03-04,Financial event impacts Packaging supply in Australia,Australia,Financial,7,S030,Open
+2025-03-05,Geopolitical event impacts Connector supply in USA,USA,Geopolitical,1,S009,Monitoring
+2025-03-06,Climate event impacts Display supply in China,China,Climate,2,S032,Open
+2025-03-07,Logistics event impacts Memory supply in Japan,Japan,Logistics,7,S035,Monitoring
+2025-03-08,Operational event impacts Camera supply in Vietnam,Vietnam,Operational,7,S024,Resolved
+2025-03-09,Labor Strike event impacts Packaging supply in Australia,Australia,Labor Strike,2,S010,Monitoring
+2025-03-10,Labor Strike event impacts Packaging supply in Australia,Australia,Labor Strike,5,S040,Open
+2025-03-11,Regulatory event impacts Camera supply in Vietnam,Vietnam,Regulatory,8,S024,Monitoring
+2025-03-12,Cybersecurity event impacts PCB supply in Malaysia,Malaysia,Cybersecurity,2,S016,Resolved
+2025-03-13,Operational event impacts Camera supply in Vietnam,Vietnam,Operational,6,S024,Open
+2025-03-14,Financial event impacts PCB supply in Malaysia,Malaysia,Financial,4,S026,Open
+2025-03-15,Climate event impacts Packaging supply in Australia,Australia,Climate,4,S030,Resolved
+2025-03-16,Geopolitical event impacts Connector supply in USA,USA,Geopolitical,1,S039,Monitoring
+2025-03-17,Logistics event impacts PCB supply in Malaysia,Malaysia,Logistics,10,S016,Open
+2025-03-18,Operational event impacts Memory supply in Japan,Japan,Operational,4,S005,Resolved
+2025-03-19,Regulatory event impacts Camera supply in Vietnam,Vietnam,Regulatory,6,S014,Open
+2025-03-20,Geopolitical event impacts Connector supply in USA,USA,Geopolitical,5,S039,Open
+2025-03-21,Operational event impacts Connector supply in USA,USA,Operational,5,S009,Open
+2025-03-22,Geopolitical event impacts Glass supply in Germany,Germany,Geopolitical,3,S008,Open
+2025-03-23,Regulatory event impacts Battery supply in South Korea,South Korea,Regulatory,10,S023,Monitoring
+2025-03-24,Logistics event impacts Display supply in China,China,Logistics,5,S002,Open
+2025-03-25,Labor Strike event impacts Connector supply in USA,USA,Labor Strike,9,S009,Open
+2025-03-26,Pandemic event impacts Memory supply in Japan,Japan,Pandemic,8,S005,Monitoring
+2025-03-27,Raw Material Shortage event impacts Battery supply in South Korea,South Korea,Raw Material Shortage,2,S033,Monitoring
+2025-03-28,Regulatory event impacts Battery supply in South Korea,South Korea,Regulatory,10,S033,Open
+2025-03-29,Financial event impacts Camera supply in Vietnam,Vietnam,Financial,8,S034,Resolved
+2025-03-30,Geopolitical event impacts Display supply in China,China,Geopolitical,8,S002,Monitoring
+2025-03-31,Climate event impacts Glass supply in Germany,Germany,Climate,8,S028,Resolved
+2025-04-01,Climate event impacts Connector supply in USA,USA,Climate,2,S029,Monitoring
+2025-04-02,Logistics event impacts Connector supply in USA,USA,Logistics,2,S039,Open
+2025-04-03,Raw Material Shortage event impacts Glass supply in Germany,Germany,Raw Material Shortage,10,S018,Resolved
+2025-04-04,Labor Strike event impacts SoC supply in Taiwan,Taiwan,Labor Strike,10,S021,Resolved
+2025-04-05,Pandemic event impacts Connector supply in USA,USA,Pandemic,9,S019,Resolved
+2025-04-06,Climate event impacts Glass supply in Germany,Germany,Climate,2,S028,Resolved
+2025-04-07,Regulatory event impacts PCB supply in Malaysia,Malaysia,Regulatory,7,S036,Monitoring
+2025-04-08,Labor Strike event impacts Memory supply in Japan,Japan,Labor Strike,6,S015,Monitoring
+2025-04-09,Labor Strike event impacts PCB supply in Malaysia,Malaysia,Labor Strike,2,S026,Monitoring
+2025-04-10,Cybersecurity event impacts Glass supply in Germany,Germany,Cybersecurity,5,S028,Monitoring
+2025-04-11,Pandemic event impacts Packaging supply in Australia,Australia,Pandemic,2,S010,Open
+2025-04-12,Climate event impacts PCB supply in Malaysia,Malaysia,Climate,7,S006,Open
+2025-04-13,Logistics event impacts Camera supply in Vietnam,Vietnam,Logistics,9,S024,Open
+2025-04-14,Operational event impacts Glass supply in Germany,Germany,Operational,9,S038,Monitoring
+2025-04-15,Labor Strike event impacts Glass supply in Germany,Germany,Labor Strike,6,S008,Resolved
+2025-04-16,Geopolitical event impacts Glass supply in Germany,Germany,Geopolitical,5,S028,Resolved
+2025-04-17,Cybersecurity event impacts Packaging supply in Australia,Australia,Cybersecurity,2,S020,Resolved
+2025-04-18,Regulatory event impacts Battery supply in South Korea,South Korea,Regulatory,3,S033,Resolved
+2025-04-19,Regulatory event impacts SoC supply in Taiwan,Taiwan,Regulatory,2,S031,Monitoring
+2025-04-20,Cybersecurity event impacts PCB supply in Malaysia,Malaysia,Cybersecurity,2,S036,Monitoring
+2025-04-21,Regulatory event impacts Sensor supply in India,India,Regulatory,7,S037,Resolved
+2025-04-22,Raw Material Shortage event impacts Packaging supply in Australia,Australia,Raw Material Shortage,9,S040,Open
+2025-04-23,Financial event impacts Connector supply in USA,USA,Financial,1,S039,Open
+2025-04-24,Financial event impacts Glass supply in Germany,Germany,Financial,6,S018,Monitoring
+2025-04-25,Logistics event impacts SoC supply in Taiwan,Taiwan,Logistics,3,S001,Resolved
+2025-04-26,Climate event impacts PCB supply in Malaysia,Malaysia,Climate,3,S026,Resolved
+2025-04-27,Climate event impacts Display supply in China,China,Climate,9,S002,Open
+2025-04-28,Labor Strike event impacts Memory supply in Japan,Japan,Labor Strike,8,S025,Monitoring
+2025-04-29,Cybersecurity event impacts SoC supply in Taiwan,Taiwan,Cybersecurity,5,S011,Resolved
+2025-04-30,Raw Material Shortage event impacts SoC supply in Taiwan,Taiwan,Raw Material Shortage,10,S021,Open

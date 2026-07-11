@@ -1,0 +1,11 @@
+country,region,risk_zone,latitude,longitude
+Taiwan,Asia,High,0.9343,95.1614
+China,Asia,Medium,-10.9054,147.6148
+South Korea,Asia,Low,-3.6242,111.1677
+Vietnam,Asia,Medium,48.9307,122.6128
+Japan,Asia,Low,8.8334,103.0598
+Malaysia,Asia,Low,-23.1176,98.9423
+India,Asia,Medium,28.0799,120.0327
+Germany,Europe,Low,28.3991,86.2847
+USA,North America,Low,9.4298,144.2138
+Australia,Oceania,Low,-0.5696,125.86
