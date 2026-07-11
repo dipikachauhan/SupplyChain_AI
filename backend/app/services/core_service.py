@@ -249,8 +249,140 @@ def get_products_summary(db: Session):
         "critical_products": sum(str(item["criticality"] or "").lower() in {"high", "critical"} for item in products),
     }
 
-def get_inventory(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Inventory).offset(skip).limit(limit).all()
+def _inventory_status(current_stock, reorder_point):
+    current_stock = current_stock or 0
+    reorder_point = reorder_point or 0
+    if current_stock == 0:
+        return "Out of Stock"
+    if reorder_point and current_stock <= reorder_point * 0.5:
+        return "Critical"
+    if reorder_point and current_stock <= reorder_point:
+        return "Low Stock"
+    return "Healthy"
+
+
+def _inventory_summary(db: Session, inventory_item):
+    supplier = db.query(models.Supplier).filter(
+        models.Supplier.supplier_id == inventory_item.supplier_id
+    ).first()
+    warehouse = db.query(models.Warehouse).filter(
+        models.Warehouse.warehouse_id == inventory_item.warehouse
+    ).first()
+    risk_score = db.query(models.SupplierRiskScore).filter(
+        models.SupplierRiskScore.supplier_id == inventory_item.supplier_id
+    ).first()
+    maximum_capacity = warehouse.storage_capacity if warehouse else None
+    utilization = (
+        inventory_item.current_stock / maximum_capacity
+        if maximum_capacity and inventory_item.current_stock is not None
+        else None
+    )
+    return {
+        "item_id": f"INV-{inventory_item.id:04d}",
+        "inventory_id": inventory_item.id,
+        "item_name": supplier.component if supplier else None,
+        "category": supplier.component if supplier else None,
+        "warehouse": inventory_item.warehouse,
+        "current_stock": inventory_item.current_stock,
+        "reorder_point": inventory_item.safety_stock,
+        "maximum_capacity": maximum_capacity,
+        "utilization": utilization,
+        "status": _inventory_status(inventory_item.current_stock, inventory_item.safety_stock),
+        "last_updated": risk_score.last_updated if risk_score else None,
+    }
+
+
+def get_inventory(
+    db: Session,
+    skip: int = 0,
+    limit: int = 100,
+    search: str | None = None,
+    warehouse: str | None = None,
+    category: str | None = None,
+    status: str | None = None,
+    sort: str | None = None,
+):
+    inventory = [_inventory_summary(db, item) for item in db.query(models.Inventory).all()]
+
+    if search:
+        search_term = search.strip().lower()
+        inventory = [item for item in inventory if search_term in item["item_id"].lower() or search_term in str(item["item_name"] or "").lower()]
+    if warehouse:
+        inventory = [item for item in inventory if str(item["warehouse"] or "").lower() == warehouse.strip().lower()]
+    if category:
+        inventory = [item for item in inventory if str(item["category"] or "").lower() == category.strip().lower()]
+    if status:
+        inventory = [item for item in inventory if str(item["status"] or "").lower() == status.strip().lower()]
+
+    sort_key = (sort or "item_id").lower()
+    sort_fields = {
+        "item": lambda item: str(item["item_name"] or "").lower(),
+        "item_name": lambda item: str(item["item_name"] or "").lower(),
+        "item_id": lambda item: item["inventory_id"],
+        "category": lambda item: str(item["category"] or "").lower(),
+        "warehouse": lambda item: str(item["warehouse"] or "").lower(),
+        "current_stock": lambda item: item["current_stock"] or 0,
+        "reorder_point": lambda item: item["reorder_point"] or 0,
+        "utilization": lambda item: item["utilization"] or 0,
+        "status": lambda item: str(item["status"] or "").lower(),
+        "last_updated": lambda item: str(item["last_updated"] or ""),
+    }
+    inventory.sort(
+        key=sort_fields.get(sort_key, sort_fields["item_id"]),
+        reverse=sort_key in {"current_stock", "reorder_point", "utilization", "last_updated"},
+    )
+    return inventory[skip:skip + limit]
+
+
+def get_inventory_detail(db: Session, item_id: str):
+    normalized_id = item_id.removeprefix("INV-")
+    if not normalized_id.isdigit():
+        return None
+    inventory_item = db.query(models.Inventory).filter(
+        models.Inventory.id == int(normalized_id)
+    ).first()
+    if inventory_item is None:
+        return None
+
+    detail = _inventory_summary(db, inventory_item)
+    supplier = db.query(models.Supplier).filter(
+        models.Supplier.supplier_id == inventory_item.supplier_id
+    ).first()
+    product_component = db.query(models.ProductComponent).filter(
+        models.ProductComponent.supplier_id == inventory_item.supplier_id
+    ).order_by(models.ProductComponent.id).first()
+    product = db.query(models.Product).filter(
+        models.Product.product_id == product_component.product_id
+    ).first() if product_component else None
+    latest_note = db.query(models.MitigationLog).filter(
+        models.MitigationLog.supplier_id == inventory_item.supplier_id
+    ).order_by(models.MitigationLog.timestamp.desc()).first()
+    business_notes = latest_note.recommendation or latest_note.issue if latest_note else None
+
+    return {
+        **detail,
+        "associated_product_id": product.product_id if product else None,
+        "associated_product": product.model if product else None,
+        "primary_supplier_id": supplier.supplier_id if supplier else inventory_item.supplier_id,
+        "primary_supplier": supplier.supplier_name if supplier else None,
+        "supplier_country": supplier.country if supplier else None,
+        "lead_time_days": supplier.lead_time_days if supplier else None,
+        "recent_inventory_movement": None,
+        "business_notes": business_notes,
+    }
+
+
+def get_inventory_summary(db: Session):
+    inventory = get_inventory(db, limit=500)
+    utilization = [item["utilization"] for item in inventory if item["utilization"] is not None]
+    return {
+        "total_inventory_items": len(inventory),
+        "total_warehouses": len({item["warehouse"] for item in inventory if item["warehouse"]}),
+        "total_inventory_quantity": sum(item["current_stock"] or 0 for item in inventory),
+        "low_stock_items": sum(item["status"] in {"Low Stock", "Critical", "Out of Stock"} for item in inventory),
+        "out_of_stock_items": sum(item["status"] == "Out of Stock" for item in inventory),
+        "average_utilization": sum(utilization) / len(utilization) if utilization else None,
+    }
 
 def get_logistics(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Logistics).offset(skip).limit(limit).all()

@@ -24,6 +24,37 @@ class Inventory(InventoryBase):
     class Config:
         from_attributes = True
 
+class InventorySummary(BaseModel):
+    item_id: str
+    inventory_id: int
+    item_name: Optional[str] = None
+    category: Optional[str] = None
+    warehouse: Optional[str] = None
+    current_stock: Optional[int] = None
+    reorder_point: Optional[int] = None
+    maximum_capacity: Optional[int] = None
+    utilization: Optional[float] = None
+    status: Optional[str] = None
+    last_updated: Optional[str] = None
+
+class InventoryDetail(InventorySummary):
+    associated_product_id: Optional[str] = None
+    associated_product: Optional[str] = None
+    primary_supplier_id: Optional[str] = None
+    primary_supplier: Optional[str] = None
+    supplier_country: Optional[str] = None
+    lead_time_days: Optional[int] = None
+    recent_inventory_movement: Optional[str] = None
+    business_notes: Optional[str] = None
+
+class InventoryDashboardSummary(BaseModel):
+    total_inventory_items: int = 0
+    total_warehouses: int = 0
+    total_inventory_quantity: int = 0
+    low_stock_items: int = 0
+    out_of_stock_items: int = 0
+    average_utilization: Optional[float] = None
+
 class LogisticsBase(BaseModel):
     route_id: str
     supplier_id: str
