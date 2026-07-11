@@ -85,6 +85,46 @@ class Product(ProductBase):
     class Config:
         from_attributes = True
 
+class ProductRiskSummary(BaseModel):
+    risk_score: Optional[float] = None
+    risk_level: Optional[str] = None
+    business_impact: Optional[float] = None
+
+class ProductSummary(ProductBase):
+    category: Optional[str] = None
+    primary_supplier_id: Optional[str] = None
+    primary_supplier: Optional[str] = None
+    primary_supplier_country: Optional[str] = None
+    criticality: Optional[str] = None
+    risk: Optional[ProductRiskSummary] = None
+    inventory_level: Optional[int] = None
+    reorder_point: Optional[int] = None
+    status: Optional[str] = None
+
+class ProductSupplier(BaseModel):
+    supplier_id: str
+    supplier_name: Optional[str] = None
+    component: Optional[str] = None
+    country: Optional[str] = None
+    criticality: Optional[str] = None
+    risk_score: Optional[float] = None
+    risk_level: Optional[str] = None
+
+class ProductDetail(ProductSummary):
+    description: Optional[str] = None
+    lead_time_days: Optional[int] = None
+    associated_suppliers: List[ProductSupplier] = Field(default_factory=list)
+    business_impact: Optional[float] = None
+    notes: Optional[str] = None
+
+class ProductDashboardSummary(BaseModel):
+    total_products: int = 0
+    total_categories: int = 0
+    average_risk_score: Optional[float] = None
+    average_inventory: Optional[float] = None
+    products_below_reorder_point: int = 0
+    critical_products: int = 0
+
 class ProductComponentBase(BaseModel):
     product_id: str
     component: Optional[str] = None

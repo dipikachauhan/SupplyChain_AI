@@ -95,8 +95,159 @@ def get_supplier_detail(db: Session, supplier_id: str):
     )).all()
     return detail
 
-def get_products(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Product).offset(skip).limit(limit).all()
+_CRITICALITY_RANK = {"low": 1, "medium": 2, "high": 3, "critical": 4}
+_RISK_RANK = {"low": 1, "medium": 2, "high": 3, "critical": 4}
+
+
+def _rank(value, ranks):
+    return ranks.get(str(value or "").strip().lower(), 0)
+
+
+def _product_summary(db: Session, product):
+    components = db.query(models.ProductComponent).filter(
+        models.ProductComponent.product_id == product.product_id
+    ).order_by(models.ProductComponent.id).all()
+    supplier_ids = list(dict.fromkeys(item.supplier_id for item in components if item.supplier_id))
+    suppliers = {
+        supplier.supplier_id: supplier
+        for supplier in db.query(models.Supplier).filter(
+            models.Supplier.supplier_id.in_(supplier_ids)
+        ).all()
+    } if supplier_ids else {}
+    risk_scores = {
+        item.supplier_id: item
+        for item in db.query(models.SupplierRiskScore).filter(
+            models.SupplierRiskScore.supplier_id.in_(supplier_ids)
+        ).all()
+    } if supplier_ids else {}
+    inventory = {
+        item.supplier_id: item
+        for item in db.query(models.Inventory).filter(
+            models.Inventory.supplier_id.in_(supplier_ids)
+        ).all()
+    } if supplier_ids else {}
+
+    primary_supplier_id = supplier_ids[0] if supplier_ids else None
+    primary_supplier = suppliers.get(primary_supplier_id) if primary_supplier_id else None
+    supplier_risks = [risk_scores[item] for item in supplier_ids if item in risk_scores]
+    risk_values = [item.risk_probability for item in supplier_risks if item.risk_probability is not None]
+    risk_score = sum(risk_values) / len(risk_values) if risk_values else None
+    highest_risk = max(supplier_risks, key=lambda item: _rank(item.risk_level, _RISK_RANK), default=None)
+    supplier_criticalities = [supplier.criticality for supplier in suppliers.values() if supplier.criticality]
+    criticality = max(supplier_criticalities, key=lambda item: _rank(item, _CRITICALITY_RANK), default=None)
+    inventory_level = sum(
+        item.current_stock or 0 for item in (inventory[supplier_id] for supplier_id in supplier_ids if supplier_id in inventory)
+    )
+    reorder_point = sum(
+        item.safety_stock or 0 for item in (inventory[supplier_id] for supplier_id in supplier_ids if supplier_id in inventory)
+    )
+
+    return {
+        "product_id": product.product_id,
+        "model": product.model,
+        "launch_year": product.launch_year,
+        "segment": product.segment,
+        "category": product.segment,
+        "primary_supplier_id": primary_supplier_id,
+        "primary_supplier": primary_supplier.supplier_name if primary_supplier else None,
+        "primary_supplier_country": primary_supplier.country if primary_supplier else None,
+        "criticality": criticality,
+        "risk": {
+            "risk_score": risk_score,
+            "risk_level": highest_risk.risk_level if highest_risk else None,
+            "business_impact": max(
+                (item.business_impact for item in supplier_risks if item.business_impact is not None),
+                default=None,
+            ),
+        },
+        "inventory_level": inventory_level,
+        "reorder_point": reorder_point,
+        "status": "Below reorder point" if inventory_level < reorder_point else "In stock",
+    }, components, suppliers, risk_scores
+
+
+def get_products(
+    db: Session,
+    skip: int = 0,
+    limit: int = 100,
+    search: str | None = None,
+    category: str | None = None,
+    criticality: str | None = None,
+    risk: str | None = None,
+    sort: str | None = None,
+):
+    products = [_product_summary(db, product)[0] for product in db.query(models.Product).all()]
+
+    if search:
+        search_term = search.strip().lower()
+        products = [item for item in products if search_term in str(item["product_id"] or "").lower() or search_term in str(item["model"] or "").lower()]
+    if category:
+        products = [item for item in products if str(item["category"] or "").lower() == category.strip().lower()]
+    if criticality:
+        products = [item for item in products if str(item["criticality"] or "").lower() == criticality.strip().lower()]
+    if risk:
+        products = [item for item in products if str((item["risk"] or {}).get("risk_level") or "").lower() == risk.strip().lower()]
+
+    sort_key = (sort or "product_id").lower()
+    sort_fields = {
+        "product": lambda item: str(item["model"] or "").lower(),
+        "product_name": lambda item: str(item["model"] or "").lower(),
+        "product_id": lambda item: str(item["product_id"] or "").lower(),
+        "category": lambda item: str(item["category"] or "").lower(),
+        "primary_supplier": lambda item: str(item["primary_supplier"] or "").lower(),
+        "criticality": lambda item: _rank(item["criticality"], _CRITICALITY_RANK),
+        "risk": lambda item: (item["risk"] or {}).get("risk_score") or -1,
+        "risk_score": lambda item: (item["risk"] or {}).get("risk_score") or -1,
+        "inventory": lambda item: item["inventory_level"] or 0,
+        "inventory_level": lambda item: item["inventory_level"] or 0,
+    }
+    products.sort(key=sort_fields.get(sort_key, sort_fields["product_id"]), reverse=sort_key in {"risk", "risk_score", "inventory", "inventory_level", "criticality"})
+    return products[skip:skip + limit]
+
+
+def get_product_detail(db: Session, product_id: str):
+    product = db.query(models.Product).filter(models.Product.product_id == product_id).first()
+    if product is None:
+        return None
+
+    summary, components, suppliers, risk_scores = _product_summary(db, product)
+    associated_suppliers = []
+    for component in components:
+        supplier = suppliers.get(component.supplier_id)
+        risk_score = risk_scores.get(component.supplier_id)
+        associated_suppliers.append({
+            "supplier_id": component.supplier_id,
+            "supplier_name": supplier.supplier_name if supplier else None,
+            "component": component.component,
+            "country": supplier.country if supplier else None,
+            "criticality": supplier.criticality if supplier else None,
+            "risk_score": risk_score.risk_probability if risk_score else None,
+            "risk_level": risk_score.risk_level if risk_score else None,
+        })
+
+    primary_supplier = suppliers.get(summary["primary_supplier_id"])
+    return {
+        **summary,
+        "description": None,
+        "lead_time_days": primary_supplier.lead_time_days if primary_supplier else None,
+        "associated_suppliers": associated_suppliers,
+        "business_impact": (summary["risk"] or {}).get("business_impact"),
+        "notes": None,
+    }
+
+
+def get_products_summary(db: Session):
+    products = get_products(db, limit=500)
+    risk_scores = [item["risk"]["risk_score"] for item in products if item.get("risk") and item["risk"].get("risk_score") is not None]
+    inventory_levels = [item["inventory_level"] for item in products if item["inventory_level"] is not None]
+    return {
+        "total_products": len(products),
+        "total_categories": len({item["category"] for item in products if item["category"]}),
+        "average_risk_score": sum(risk_scores) / len(risk_scores) if risk_scores else None,
+        "average_inventory": sum(inventory_levels) / len(inventory_levels) if inventory_levels else None,
+        "products_below_reorder_point": sum(item["inventory_level"] < item["reorder_point"] for item in products),
+        "critical_products": sum(str(item["criticality"] or "").lower() in {"high", "critical"} for item in products),
+    }
 
 def get_inventory(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Inventory).offset(skip).limit(limit).all()
