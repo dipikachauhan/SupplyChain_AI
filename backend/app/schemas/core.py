@@ -108,17 +108,21 @@ class NewsEvent(NewsEventBase):
 
 class NewsEventSummary(NewsEventBase):
     supplier_name: Optional[str] = None
-    business_impact: Optional[str] = None
-    probability: Optional[str] = None
+    affected_product: Optional[str] = None
+    affected_component: Optional[str] = None
+    probability: Optional[float] = None
+    dynamic_risk_score: Optional[float] = None
+    business_impact: Optional[float] = None
+    mitigation_recommendation: Optional[str] = None
+    published_date: Optional[str] = None
 
 class NewsEventDetail(NewsEventSummary):
     summary: Optional[str] = None
-    affected_product: Optional[str] = None
     recommended_monitoring_status: Optional[str] = None
-    published_date: Optional[str] = None
     source: Optional[str] = None
     related_logistics_route: Optional[str] = None
     affected_warehouse: Optional[str] = None
+    historical_notes: Optional[str] = None
 
 class NewsDashboardSummary(BaseModel):
     total_news_events: int = 0

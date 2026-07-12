@@ -388,8 +388,26 @@ def get_logistics(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Logistics).offset(skip).limit(limit).all()
 
 _NEWS_CATEGORY_MAP = {
-    "financial": "Supplier Operational", "labor strike": "Logistics",
-    "pandemic": "Natural Disaster", "political": "Geopolitical",
+    "financial": "Supplier Operational",
+    "labor strike": "Logistics",
+    "pandemic": "Natural Disaster",
+    "political": "Geopolitical",
+    "climate": "Natural Disaster",
+    "operational": "Supplier Operational",
+    "raw material shortage": "Supplier Operational",
+    "cyber": "Cybersecurity",
+    "cybersecurity": "Cybersecurity",
+    "product quality": "Product Quality",
+}
+
+_NEWS_MITIGATION = {
+    "Geopolitical": "Shift sourcing to alternate regions",
+    "Natural Disaster": "Activate backup suppliers; Increase safety stock",
+    "Logistics": "Use alternative shipping routes",
+    "Cybersecurity": "Increase monitoring; Isolate affected supplier",
+    "Supplier Operational": "Emergency procurement; Activate secondary supplier",
+    "Regulatory": "Engage compliance review; Adjust sourcing timeline",
+    "Product Quality": "Increase inspection; Pause affected batches",
 }
 
 def _news_level(value):
@@ -401,30 +419,81 @@ def _news_level(value):
     level = str(value).strip().capitalize()
     return level if level in {"Low", "Medium", "High"} else "Low"
 
+def _news_severity_numeric(value):
+    if value is None:
+        return 5.0
+    if isinstance(value, (int, float)) or str(value).strip().isdigit():
+        return float(value)
+    return {"low": 3.0, "medium": 6.0, "high": 9.0}.get(str(value).strip().lower(), 5.0)
+
 def _news_category(value):
     raw = str(value or "").strip()
     normalized = _NEWS_CATEGORY_MAP.get(raw.lower(), raw)
-    return normalized if normalized in {"Geopolitical", "Natural Disaster", "Logistics", "Supplier Operational", "Regulatory", "Cyber", "Product Quality"} else "Supplier Operational"
+    allowed = {
+        "Geopolitical", "Natural Disaster", "Logistics", "Supplier Operational",
+        "Regulatory", "Cybersecurity", "Product Quality",
+    }
+    return normalized if normalized in allowed else "Supplier Operational"
+
+def _news_mitigation(category):
+    return _NEWS_MITIGATION.get(category, "Monitor supplier status and review contingency plans")
+
+def _news_dynamic_risk_score(event, risk):
+    severity = _news_severity_numeric(event.severity)
+    if risk and risk.risk_probability is not None and risk.business_impact is not None:
+        return round(risk.risk_probability * risk.business_impact * (severity / 10) * 10, 2)
+    return round(severity, 2)
+
+def _news_supplier_context(db: Session, supplier_id):
+    supplier = db.query(models.Supplier).filter(models.Supplier.supplier_id == supplier_id).first()
+    risk = db.query(models.SupplierRiskScore).filter(
+        models.SupplierRiskScore.supplier_id == supplier_id
+    ).first()
+    component = db.query(models.ProductComponent).filter(
+        models.ProductComponent.supplier_id == supplier_id
+    ).order_by(models.ProductComponent.id).first()
+    product = db.query(models.Product).filter(
+        models.Product.product_id == component.product_id
+    ).first() if component else None
+    latest_note = db.query(models.MitigationLog).filter(
+        models.MitigationLog.supplier_id == supplier_id
+    ).order_by(models.MitigationLog.timestamp.desc()).first()
+    return supplier, risk, component, product, latest_note
 
 def _news_record(db: Session, event):
-    supplier = db.query(models.Supplier).filter(models.Supplier.supplier_id == event.affected_supplier).first()
-    risk = db.query(models.SupplierRiskScore).filter(models.SupplierRiskScore.supplier_id == event.affected_supplier).first()
+    supplier, risk, component, product, latest_note = _news_supplier_context(db, event.affected_supplier)
+    category = _news_category(event.risk_category)
     severity = _news_level(event.severity)
+    probability = risk.risk_probability if risk and risk.risk_probability is not None else _news_severity_numeric(event.severity) / 10
+    business_impact = risk.business_impact if risk and risk.business_impact is not None else _news_severity_numeric(event.severity)
     return {
-        "id": event.id, "date": event.date, "headline": event.headline,
-        "country": event.country, "risk_category": _news_category(event.risk_category),
-        "severity": severity, "affected_supplier": event.affected_supplier,
+        "id": event.id,
+        "date": event.date,
+        "headline": event.headline,
+        "country": event.country,
+        "risk_category": category,
+        "severity": severity,
+        "affected_supplier": event.affected_supplier,
         "supplier_name": supplier.supplier_name if supplier else event.affected_supplier,
-        "business_impact": _news_level(risk.business_impact if risk else severity),
-        "probability": _news_level(risk.risk_probability if risk else severity),
+        "affected_product": product.model if product else None,
+        "affected_component": component.component if component else (supplier.component if supplier else None),
+        "probability": probability,
+        "dynamic_risk_score": _news_dynamic_risk_score(event, risk),
+        "business_impact": business_impact,
+        "mitigation_recommendation": _news_mitigation(category),
         "status": event.status,
+        "published_date": event.date,
+        "historical_notes": latest_note.recommendation or latest_note.issue if latest_note else None,
     }
 
-def get_news_events(db: Session, skip: int = 0, limit: int = 100, search: str | None = None, country: str | None = None, supplier: str | None = None, severity: str | None = None, category: str | None = None, date: str | None = None, sort: str | None = None):
+def get_news_events(db: Session, skip: int = 0, limit: int = 100, search: str | None = None, country: str | None = None, supplier: str | None = None, severity: str | None = None, category: str | None = None, status: str | None = None, date: str | None = None, sort: str | None = None):
     records = [_news_record(db, event) for event in db.query(models.NewsEvent).all()]
     if search:
         term = search.strip().lower()
-        records = [item for item in records if any(term in str(item[field] or "").lower() for field in ("headline", "country", "affected_supplier", "supplier_name"))]
+        records = [item for item in records if any(
+            term in str(item[field] or "").lower()
+            for field in ("headline", "country", "affected_supplier", "supplier_name", "affected_product", "affected_component", "risk_category")
+        )]
     if country:
         records = [item for item in records if str(item["country"] or "").lower() == country.strip().lower()]
     if supplier:
@@ -434,11 +503,24 @@ def get_news_events(db: Session, skip: int = 0, limit: int = 100, search: str | 
         records = [item for item in records if item["severity"].lower() == severity.strip().lower()]
     if category:
         records = [item for item in records if item["risk_category"].lower() == category.strip().lower()]
+    if status:
+        records = [item for item in records if str(item["status"] or "").lower() == status.strip().lower()]
     if date:
         records = [item for item in records if str(item["date"] or "").startswith(date.strip())]
     sort_key = (sort or "date").lower()
-    fields = {"date": lambda item: str(item["date"] or ""), "headline": lambda item: str(item["headline"] or "").lower(), "country": lambda item: str(item["country"] or "").lower(), "supplier": lambda item: str(item["supplier_name"] or "").lower(), "severity": lambda item: _rank(item["severity"], _RISK_RANK), "category": lambda item: str(item["risk_category"] or "").lower()}
-    records.sort(key=fields.get(sort_key, fields["date"]), reverse=sort_key in {"date", "severity"})
+    fields = {
+        "date": lambda item: str(item["date"] or ""),
+        "headline": lambda item: str(item["headline"] or "").lower(),
+        "country": lambda item: str(item["country"] or "").lower(),
+        "supplier": lambda item: str(item["supplier_name"] or "").lower(),
+        "severity": lambda item: _rank(item["severity"], _RISK_RANK),
+        "category": lambda item: str(item["risk_category"] or "").lower(),
+        "status": lambda item: str(item["status"] or "").lower(),
+        "dynamic_risk_score": lambda item: item["dynamic_risk_score"] or -1,
+        "probability": lambda item: item["probability"] or -1,
+        "business_impact": lambda item: item["business_impact"] or -1,
+    }
+    records.sort(key=fields.get(sort_key, fields["date"]), reverse=sort_key in {"date", "severity", "dynamic_risk_score", "probability", "business_impact"})
     return records[skip:skip + limit]
 
 def get_news_detail(db: Session, news_id: int):
@@ -447,15 +529,12 @@ def get_news_detail(db: Session, news_id: int):
         return None
     detail = _news_record(db, event)
     supplier_id = event.affected_supplier
-    component = db.query(models.ProductComponent).filter(models.ProductComponent.supplier_id == supplier_id).order_by(models.ProductComponent.id).first()
-    product = db.query(models.Product).filter(models.Product.product_id == component.product_id).first() if component else None
     route = db.query(models.Logistics).filter(models.Logistics.supplier_id == supplier_id).order_by(models.Logistics.route_id).first()
     warehouse = db.query(models.Inventory).filter(models.Inventory.supplier_id == supplier_id).order_by(models.Inventory.id).first()
     detail.update({
         "summary": f"{event.headline or 'Supply chain event'} requires monitoring for potential disruption to related operations.",
-        "affected_product": product.model if product else None,
         "recommended_monitoring_status": event.status or "Open",
-        "published_date": event.date, "source": "ChainGuard supply chain intelligence dataset",
+        "source": "ChainGuard supply chain intelligence dataset",
         "related_logistics_route": route.route_id if route else None,
         "affected_warehouse": warehouse.warehouse if warehouse else None,
     })

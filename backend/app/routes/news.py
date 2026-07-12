@@ -10,8 +10,8 @@ router = APIRouter(prefix="/news", tags=["News"])
 
 @router.get("", response_model=List[schemas.NewsEventSummary], include_in_schema=False)
 @router.get("/", response_model=List[schemas.NewsEventSummary])
-def get_news(skip: int = Query(0, ge=0), limit: int = Query(100, ge=1, le=500), search: str | None = None, country: str | None = None, supplier: str | None = None, severity: str | None = None, category: str | None = None, date: str | None = None, sort: str | None = None, db: Session = Depends(get_db)):
-    return core_service.get_news_events(db, skip, limit, search, country, supplier, severity, category, date, sort)
+def get_news(skip: int = Query(0, ge=0), limit: int = Query(100, ge=1, le=500), search: str | None = None, country: str | None = None, supplier: str | None = None, severity: str | None = None, category: str | None = None, status: str | None = None, date: str | None = None, sort: str | None = None, db: Session = Depends(get_db)):
+    return core_service.get_news_events(db, skip, limit, search, country, supplier, severity, category, status, date, sort)
 
 @router.get("/summary", response_model=schemas.NewsDashboardSummary)
 def get_news_summary(db: Session = Depends(get_db)):
