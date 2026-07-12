@@ -106,6 +106,26 @@ class NewsEvent(NewsEventBase):
     class Config:
         from_attributes = True
 
+class NewsEventSummary(NewsEventBase):
+    supplier_name: Optional[str] = None
+    business_impact: Optional[str] = None
+    probability: Optional[str] = None
+
+class NewsEventDetail(NewsEventSummary):
+    summary: Optional[str] = None
+    affected_product: Optional[str] = None
+    recommended_monitoring_status: Optional[str] = None
+    published_date: Optional[str] = None
+    source: Optional[str] = None
+    related_logistics_route: Optional[str] = None
+    affected_warehouse: Optional[str] = None
+
+class NewsDashboardSummary(BaseModel):
+    total_news_events: int = 0
+    high_severity_events: int = 0
+    countries_impacted: int = 0
+    affected_suppliers: int = 0
+
 class ProductBase(BaseModel):
     product_id: str
     model: Optional[str] = None

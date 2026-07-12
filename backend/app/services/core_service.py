@@ -387,8 +387,83 @@ def get_inventory_summary(db: Session):
 def get_logistics(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Logistics).offset(skip).limit(limit).all()
 
-def get_news_events(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.NewsEvent).offset(skip).limit(limit).all()
+_NEWS_CATEGORY_MAP = {
+    "financial": "Supplier Operational", "labor strike": "Logistics",
+    "pandemic": "Natural Disaster", "political": "Geopolitical",
+}
+
+def _news_level(value):
+    if value is None:
+        return "Low"
+    if isinstance(value, (int, float)) or str(value).strip().isdigit():
+        score = float(value)
+        return "High" if score >= 7 else "Medium" if score >= 4 else "Low"
+    level = str(value).strip().capitalize()
+    return level if level in {"Low", "Medium", "High"} else "Low"
+
+def _news_category(value):
+    raw = str(value or "").strip()
+    normalized = _NEWS_CATEGORY_MAP.get(raw.lower(), raw)
+    return normalized if normalized in {"Geopolitical", "Natural Disaster", "Logistics", "Supplier Operational", "Regulatory", "Cyber", "Product Quality"} else "Supplier Operational"
+
+def _news_record(db: Session, event):
+    supplier = db.query(models.Supplier).filter(models.Supplier.supplier_id == event.affected_supplier).first()
+    risk = db.query(models.SupplierRiskScore).filter(models.SupplierRiskScore.supplier_id == event.affected_supplier).first()
+    severity = _news_level(event.severity)
+    return {
+        "id": event.id, "date": event.date, "headline": event.headline,
+        "country": event.country, "risk_category": _news_category(event.risk_category),
+        "severity": severity, "affected_supplier": event.affected_supplier,
+        "supplier_name": supplier.supplier_name if supplier else event.affected_supplier,
+        "business_impact": _news_level(risk.business_impact if risk else severity),
+        "probability": _news_level(risk.risk_probability if risk else severity),
+        "status": event.status,
+    }
+
+def get_news_events(db: Session, skip: int = 0, limit: int = 100, search: str | None = None, country: str | None = None, supplier: str | None = None, severity: str | None = None, category: str | None = None, date: str | None = None, sort: str | None = None):
+    records = [_news_record(db, event) for event in db.query(models.NewsEvent).all()]
+    if search:
+        term = search.strip().lower()
+        records = [item for item in records if any(term in str(item[field] or "").lower() for field in ("headline", "country", "affected_supplier", "supplier_name"))]
+    if country:
+        records = [item for item in records if str(item["country"] or "").lower() == country.strip().lower()]
+    if supplier:
+        term = supplier.strip().lower()
+        records = [item for item in records if term in str(item["affected_supplier"] or "").lower() or term in str(item["supplier_name"] or "").lower()]
+    if severity:
+        records = [item for item in records if item["severity"].lower() == severity.strip().lower()]
+    if category:
+        records = [item for item in records if item["risk_category"].lower() == category.strip().lower()]
+    if date:
+        records = [item for item in records if str(item["date"] or "").startswith(date.strip())]
+    sort_key = (sort or "date").lower()
+    fields = {"date": lambda item: str(item["date"] or ""), "headline": lambda item: str(item["headline"] or "").lower(), "country": lambda item: str(item["country"] or "").lower(), "supplier": lambda item: str(item["supplier_name"] or "").lower(), "severity": lambda item: _rank(item["severity"], _RISK_RANK), "category": lambda item: str(item["risk_category"] or "").lower()}
+    records.sort(key=fields.get(sort_key, fields["date"]), reverse=sort_key in {"date", "severity"})
+    return records[skip:skip + limit]
+
+def get_news_detail(db: Session, news_id: int):
+    event = db.query(models.NewsEvent).filter(models.NewsEvent.id == news_id).first()
+    if event is None:
+        return None
+    detail = _news_record(db, event)
+    supplier_id = event.affected_supplier
+    component = db.query(models.ProductComponent).filter(models.ProductComponent.supplier_id == supplier_id).order_by(models.ProductComponent.id).first()
+    product = db.query(models.Product).filter(models.Product.product_id == component.product_id).first() if component else None
+    route = db.query(models.Logistics).filter(models.Logistics.supplier_id == supplier_id).order_by(models.Logistics.route_id).first()
+    warehouse = db.query(models.Inventory).filter(models.Inventory.supplier_id == supplier_id).order_by(models.Inventory.id).first()
+    detail.update({
+        "summary": f"{event.headline or 'Supply chain event'} requires monitoring for potential disruption to related operations.",
+        "affected_product": product.model if product else None,
+        "recommended_monitoring_status": event.status or "Open",
+        "published_date": event.date, "source": "ChainGuard supply chain intelligence dataset",
+        "related_logistics_route": route.route_id if route else None,
+        "affected_warehouse": warehouse.warehouse if warehouse else None,
+    })
+    return detail
+
+def get_news_summary(db: Session):
+    records = get_news_events(db, limit=500)
+    return {"total_news_events": len(records), "high_severity_events": sum(item["severity"] == "High" for item in records), "countries_impacted": len({item["country"] for item in records if item["country"]}), "affected_suppliers": len({item["affected_supplier"] for item in records if item["affected_supplier"]})}
 
 def _risk_record(db: Session, risk_score):
     supplier = db.query(models.Supplier).filter(
