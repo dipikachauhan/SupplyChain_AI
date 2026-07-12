@@ -390,6 +390,149 @@ def get_logistics(db: Session, skip: int = 0, limit: int = 100):
 def get_news_events(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.NewsEvent).offset(skip).limit(limit).all()
 
+def _risk_record(db: Session, risk_score):
+    supplier = db.query(models.Supplier).filter(
+        models.Supplier.supplier_id == risk_score.supplier_id
+    ).first()
+    product_component = db.query(models.ProductComponent).filter(
+        models.ProductComponent.supplier_id == risk_score.supplier_id
+    ).order_by(models.ProductComponent.id).first()
+    product = db.query(models.Product).filter(
+        models.Product.product_id == product_component.product_id
+    ).first() if product_component else None
+    latest_note = db.query(models.MitigationLog).filter(
+        models.MitigationLog.supplier_id == risk_score.supplier_id
+    ).order_by(models.MitigationLog.timestamp.desc()).first()
+
+    return {
+        "id": risk_score.id,
+        "risk_id": f"RISK-{risk_score.id:04d}",
+        "supplier_id": risk_score.supplier_id,
+        "supplier_name": supplier.supplier_name if supplier else None,
+        "country": supplier.country if supplier else None,
+        "product_id": product.product_id if product else None,
+        "product": product.model if product else None,
+        "risk_category": latest_note.issue if latest_note else (supplier.component if supplier else None),
+        "criticality": supplier.criticality if supplier else None,
+        "risk_probability": risk_score.risk_probability,
+        "risk_score": (
+            risk_score.risk_probability * risk_score.business_impact
+            if risk_score.risk_probability is not None and risk_score.business_impact is not None
+            else None
+        ),
+        "business_impact": risk_score.business_impact,
+        "risk_level": risk_score.risk_level,
+        "status": latest_note.status if latest_note else (supplier.status if supplier else None),
+        "last_updated": risk_score.last_updated,
+    }
+
+
+def get_risks(
+    db: Session,
+    skip: int = 0,
+    limit: int = 100,
+    search: str | None = None,
+    country: str | None = None,
+    supplier: str | None = None,
+    risk: str | None = None,
+    criticality: str | None = None,
+    category: str | None = None,
+    sort: str | None = None,
+):
+    records = [_risk_record(db, item) for item in db.query(models.SupplierRiskScore).all()]
+
+    if search:
+        search_term = search.strip().lower()
+        records = [item for item in records if any(
+            search_term in str(item[field] or "").lower()
+            for field in ("supplier_id", "supplier_name", "product_id", "product", "country")
+        )]
+    if country:
+        records = [item for item in records if str(item["country"] or "").lower() == country.strip().lower()]
+    if supplier:
+        supplier_term = supplier.strip().lower()
+        records = [item for item in records if supplier_term in str(item["supplier_id"] or "").lower() or supplier_term in str(item["supplier_name"] or "").lower()]
+    if risk:
+        records = [item for item in records if str(item["risk_level"] or "").lower() == risk.strip().lower()]
+    if criticality:
+        records = [item for item in records if str(item["criticality"] or "").lower() == criticality.strip().lower()]
+    if category:
+        records = [item for item in records if str(item["risk_category"] or "").lower() == category.strip().lower()]
+
+    sort_key = (sort or "risk_probability").lower()
+    sort_fields = {
+        "risk_id": lambda item: item["id"],
+        "supplier": lambda item: str(item["supplier_name"] or "").lower(),
+        "country": lambda item: str(item["country"] or "").lower(),
+        "product": lambda item: str(item["product"] or "").lower(),
+        "category": lambda item: str(item["risk_category"] or "").lower(),
+        "criticality": lambda item: _rank(item["criticality"], _CRITICALITY_RANK),
+        "risk": lambda item: item["risk_score"] or -1,
+        "risk_score": lambda item: item["risk_score"] or -1,
+        "risk_probability": lambda item: item["risk_probability"] or -1,
+        "business_impact": lambda item: item["business_impact"] or -1,
+        "status": lambda item: str(item["status"] or "").lower(),
+        "last_updated": lambda item: str(item["last_updated"] or ""),
+    }
+    records.sort(
+        key=sort_fields.get(sort_key, sort_fields["risk_probability"]),
+        reverse=sort_key in {"risk", "risk_score", "risk_probability", "business_impact", "criticality", "last_updated"},
+    )
+    return records[skip:skip + limit]
+
+
+def get_risk_detail(db: Session, risk_id: str):
+    normalized_id = risk_id.removeprefix("RISK-")
+    if not normalized_id.isdigit():
+        return None
+    risk_score = db.query(models.SupplierRiskScore).filter(
+        models.SupplierRiskScore.id == int(normalized_id)
+    ).first()
+    if risk_score is None:
+        return None
+
+    detail = _risk_record(db, risk_score)
+    inventory_items = db.query(models.Inventory).filter(
+        models.Inventory.supplier_id == risk_score.supplier_id
+    ).all()
+    latest_note = db.query(models.MitigationLog).filter(
+        models.MitigationLog.supplier_id == risk_score.supplier_id
+    ).order_by(models.MitigationLog.timestamp.desc()).first()
+    risk_description = latest_note.issue if latest_note else None
+    historical_notes = latest_note.recommendation if latest_note else None
+
+    return {
+        **detail,
+        "risk_description": risk_description,
+        "inventory_exposure": sum(item.current_stock or 0 for item in inventory_items),
+        "affected_warehouses": sorted({item.warehouse for item in inventory_items if item.warehouse}),
+        "potential_revenue_impact": None,
+        "historical_notes": historical_notes,
+    }
+
+
+def get_risk_summary(db: Session):
+    records = get_risks(db, limit=500)
+    risk_scores = [item["risk_score"] for item in records if item["risk_score"] is not None]
+    impacts = [item["business_impact"] for item in records if item["business_impact"] is not None]
+    country_scores = {}
+    for record in records:
+        if record["country"] and record["risk_score"] is not None:
+            country_scores.setdefault(record["country"], []).append(record["risk_score"])
+    highest_country = max(country_scores, key=lambda item: sum(country_scores[item]) / len(country_scores[item]), default=None)
+    highest_supplier = max(records, key=lambda item: item["risk_score"] or -1, default=None)
+    return {
+        "total_risks": len(records),
+        "high_risk_items": sum(str(item["risk_level"] or "").lower() == "high" for item in records),
+        "medium_risk_items": sum(str(item["risk_level"] or "").lower() == "medium" for item in records),
+        "low_risk_items": sum(str(item["risk_level"] or "").lower() == "low" for item in records),
+        "average_risk_score": sum(risk_scores) / len(risk_scores) if risk_scores else None,
+        "average_business_impact": sum(impacts) / len(impacts) if impacts else None,
+        "highest_risk_country": highest_country,
+        "highest_risk_supplier": highest_supplier["supplier_name"] if highest_supplier else None,
+    }
+
+
 def get_risk_scores(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.SupplierRiskScore).offset(skip).limit(limit).all()
 

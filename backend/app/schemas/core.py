@@ -256,6 +256,35 @@ class SupplierRiskScore(SupplierRiskScoreBase):
     class Config:
         from_attributes = True
 
+class RiskRecord(SupplierRiskScoreBase):
+    id: int
+    risk_id: str
+    risk_score: Optional[float] = None
+    supplier_name: Optional[str] = None
+    country: Optional[str] = None
+    product_id: Optional[str] = None
+    product: Optional[str] = None
+    risk_category: Optional[str] = None
+    criticality: Optional[str] = None
+    status: Optional[str] = None
+
+class RiskDetail(RiskRecord):
+    risk_description: Optional[str] = None
+    inventory_exposure: Optional[int] = None
+    affected_warehouses: List[str] = Field(default_factory=list)
+    potential_revenue_impact: Optional[float] = None
+    historical_notes: Optional[str] = None
+
+class RiskDashboardSummary(BaseModel):
+    total_risks: int = 0
+    high_risk_items: int = 0
+    medium_risk_items: int = 0
+    low_risk_items: int = 0
+    average_risk_score: Optional[float] = None
+    average_business_impact: Optional[float] = None
+    highest_risk_country: Optional[str] = None
+    highest_risk_supplier: Optional[str] = None
+
 class WarehouseBase(BaseModel):
     warehouse_id: str
     country: Optional[str] = None
