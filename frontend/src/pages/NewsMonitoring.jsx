@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+﻿import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { Eye, RefreshCw, Search } from 'lucide-react'
 import { getNews, getNewsById, getNewsSummary } from '../api'
@@ -237,7 +237,14 @@ export default function NewsMonitoring() {
                       <td className="px-5 py-4">{formatNumber(event.business_impact)}</td>
                       <td className="px-5 py-4">{event.status || '—'}</td>
                       <td className="px-5 py-4">
-                        <Button size="sm" onClick={() => setSelectedId(event.id)}>
+                        <Button
+                            size="sm"
+                            onClick={() => {
+                              console.log("CLICKED", event.id)
+                              setSelectedId(event.id)
+                              console.log("URL:", window.location.href)
+                            }}
+                          >
                           <Eye className="h-3.5 w-3.5" />
                           View
                         </Button>
@@ -262,3 +269,4 @@ export default function NewsMonitoring() {
     </div>
   )
 }
+

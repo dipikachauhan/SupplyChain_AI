@@ -106,7 +106,7 @@ class NewsEvent(NewsEventBase):
     class Config:
         from_attributes = True
 
-class NewsEventSummary(NewsEventBase):
+class NewsEventSummary(NewsEvent):
     supplier_name: Optional[str] = None
     affected_product: Optional[str] = None
     affected_component: Optional[str] = None
