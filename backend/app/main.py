@@ -1,14 +1,14 @@
-from fastapi import FastAPI
+﻿from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import engine, Base
-from app.routes import suppliers, products, inventory, logistics, news, risk, dashboard
+from app.routes import suppliers, products, inventory, logistics, news, risk, dashboard, network, recommendations, simulation
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
-    title="ChainGuard AI",
+    title="SupplyLens AI",
     description="AI Supply Chain Risk Intelligence Platform",
     version="1.0.0"
 )
@@ -28,9 +28,14 @@ app.include_router(logistics.router)
 app.include_router(news.router)
 app.include_router(risk.router)
 app.include_router(dashboard.router)
+app.include_router(network.router)
+app.include_router(recommendations.router)
+app.include_router(simulation.router)
 
 @app.get("/")
 def home():
     return {
-        "message": "ChainGuard AI Backend Running Successfully 🚀"
+        "message": "SupplyLens AI Backend Running Successfully 🚀"
     }
+
+

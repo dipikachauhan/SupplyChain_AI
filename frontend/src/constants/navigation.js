@@ -59,5 +59,5 @@ export const NAV_ITEMS = [
   },
 ]
 
-export const APP_NAME = 'ChainGuard AI'
-export const APP_TAGLINE = 'Supply Chain Risk Intelligence'
+export const APP_NAME = 'SupplyLens AI'
+export const APP_TAGLINE = 'AI-Powered Supply Chain Risk Intelligence Platform'

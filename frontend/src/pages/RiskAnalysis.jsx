@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { Eye, PieChart as PieChartIcon, RefreshCw, Search, X } from 'lucide-react'
 import { Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { getRiskById, getRiskScores, getRiskSummary } from '../api'
@@ -8,7 +9,7 @@ import { ensureArray } from '../utils/dashboardMetrics'
 import { formatDate, formatNumber, formatPercent } from '../utils/formatters'
 
 const RISK_LIMIT = 500
-const RISK_COLORS = { High: '#ef4444', Medium: '#f59e0b', Low: '#22c55e' }
+const RISK_COLORS = { High: 'var(--color-risk-high)', Medium: 'var(--color-risk-medium)', Low: 'var(--color-risk-safe)' }
 
 function SummaryCard({ label, value }) {
   return <Card><p className="text-sm font-medium text-cg-muted">{label}</p><p className="mt-3 text-3xl font-semibold text-cg-text">{value}</p></Card>
@@ -30,8 +31,8 @@ function RiskCharts({ risks }) {
   }, {})).map((item) => ({ country: item.country, averageRisk: item.total / item.count })).sort((a, b) => b.averageRisk - a.averageRisk).slice(0, 5)
 
   return <div className="grid gap-4 xl:grid-cols-2">
-    <Card><h2 className="text-sm font-semibold uppercase tracking-wide text-cg-text">Risk distribution</h2><p className="mt-1 text-sm text-cg-muted">Current risk level mix across supplier risk records.</p><div className="mt-5 h-72"><ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={distribution} dataKey="value" nameKey="name" innerRadius={58} outerRadius={92} paddingAngle={3}>{distribution.map((item) => <Cell key={item.name} fill={RISK_COLORS[item.name]} />)}</Pie><Tooltip contentStyle={{ background: '#172033', border: '1px solid #334155', borderRadius: '8px' }} labelStyle={{ color: '#e2e8f0' }} itemStyle={{ color: '#e2e8f0' }} /><Legend wrapperStyle={{ color: '#94a3b8', fontSize: 12 }} /></PieChart></ResponsiveContainer></div></Card>
-    <Card><h2 className="text-sm font-semibold uppercase tracking-wide text-cg-text">Top risk countries</h2><p className="mt-1 text-sm text-cg-muted">Top five countries by average calculated risk score.</p><div className="mt-5 h-72"><ResponsiveContainer width="100%" height="100%"><BarChart data={countries} layout="vertical" margin={{ top: 8, right: 16, left: 24, bottom: 0 }}><CartesianGrid stroke="#334155" strokeDasharray="3 3" horizontal={false} /><XAxis type="number" tick={{ fill: '#94a3b8', fontSize: 12 }} tickLine={false} axisLine={false} /><YAxis dataKey="country" type="category" width={88} tick={{ fill: '#94a3b8', fontSize: 12 }} tickLine={false} axisLine={false} /><Tooltip contentStyle={{ background: '#172033', border: '1px solid #334155', borderRadius: '8px' }} labelStyle={{ color: '#e2e8f0' }} itemStyle={{ color: '#e2e8f0' }} formatter={(value) => formatNumber(value, { maximumFractionDigits: 2 })} /><Bar dataKey="averageRisk" name="Average Risk Score" fill="#4f8cff" radius={[0, 4, 4, 0]} /></BarChart></ResponsiveContainer></div></Card>
+    <Card><h2 className="text-sm font-semibold uppercase tracking-wide text-cg-text">Risk distribution</h2><p className="mt-1 text-sm text-cg-muted">Current risk level mix across supplier risk records.</p><div className="mt-5 h-72"><ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={distribution} dataKey="value" nameKey="name" innerRadius={58} outerRadius={92} paddingAngle={3}>{distribution.map((item) => <Cell key={item.name} fill={RISK_COLORS[item.name]} />)}</Pie><Tooltip contentStyle={{ background: 'var(--color-cg-card)', border: '1px solid var(--color-cg-border)', borderRadius: '8px' }} labelStyle={{ color: 'var(--color-cg-text)' }} itemStyle={{ color: 'var(--color-cg-text)' }} /><Legend wrapperStyle={{ color: 'var(--color-cg-muted)', fontSize: 12 }} /></PieChart></ResponsiveContainer></div></Card>
+    <Card><h2 className="text-sm font-semibold uppercase tracking-wide text-cg-text">Top risk countries</h2><p className="mt-1 text-sm text-cg-muted">Top five countries by average calculated risk score.</p><div className="mt-5 h-72"><ResponsiveContainer width="100%" height="100%"><BarChart data={countries} layout="vertical" margin={{ top: 8, right: 16, left: 24, bottom: 0 }}><CartesianGrid stroke="var(--color-cg-chart-grid)" strokeDasharray="3 3" horizontal={false} /><XAxis type="number" tick={{ fill: 'var(--color-cg-chart-axis)', fontSize: 12 }} tickLine={false} axisLine={false} /><YAxis dataKey="country" type="category" width={88} tick={{ fill: 'var(--color-cg-chart-axis)', fontSize: 12 }} tickLine={false} axisLine={false} /><Tooltip contentStyle={{ background: 'var(--color-cg-card)', border: '1px solid var(--color-cg-border)', borderRadius: '8px' }} labelStyle={{ color: 'var(--color-cg-text)' }} itemStyle={{ color: 'var(--color-cg-text)' }} formatter={(value) => formatNumber(value, { maximumFractionDigits: 2 })} /><Bar dataKey="averageRisk" name="Average Risk Score" fill="var(--color-cg-primary)" radius={[0, 4, 4, 0]} /></BarChart></ResponsiveContainer></div></Card>
   </div>
 }
 
@@ -41,6 +42,10 @@ function RiskDetails({ risk, loading, error, onRetry, onClose }) {
 
 export default function RiskAnalysis() {
   const [search, setSearch] = useState(''); const [country, setCountry] = useState(''); const [supplier, setSupplier] = useState(''); const [riskLevel, setRiskLevel] = useState(''); const [criticality, setCriticality] = useState(''); const [sort, setSort] = useState('risk_score'); const [selectedRiskId, setSelectedRiskId] = useState(null)
+
+  const [searchParams] = useSearchParams()
+
+  const supplierIdFromQuery = searchParams.get('supplier_id')   
   const fetchRisks = useCallback(async () => { const [risks, summary] = await Promise.all([getRiskScores({ limit: RISK_LIMIT, ...(search.trim() && { search: search.trim() }), ...(country && { country }), ...(supplier && { supplier }), ...(riskLevel && { risk: riskLevel }), ...(criticality && { criticality }), ...(sort && { sort }) }), getRiskSummary()]); return { risks: risks.data, summary: summary.data } }, [search, country, supplier, riskLevel, criticality, sort])
   const { data, loading, error, refetch } = useApi(fetchRisks)
   const risks = ensureArray(data?.risks).filter((item) => item && typeof item === 'object'); const summary = data?.summary && typeof data.summary === 'object' ? data.summary : null

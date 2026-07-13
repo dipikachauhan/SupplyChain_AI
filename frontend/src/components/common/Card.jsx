@@ -7,12 +7,12 @@ export default function Card({
   ...props
 }) {
   const paddingClass =
-    padding === 'none' ? 'p-0' : padding === 'sm' ? 'p-4' : 'p-5'
+    padding === 'none' ? 'p-0' : padding === 'sm' ? 'p-3.5' : 'p-4'
 
   return (
     <div
       className={cn(
-        'rounded-cg border border-cg-border bg-cg-card shadow-sm',
+        'rounded-cg border border-cg-border bg-cg-card shadow-[0_1px_2px_rgba(15,23,42,0.04)]',
         paddingClass,
         className,
       )}

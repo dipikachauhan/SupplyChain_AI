@@ -56,13 +56,13 @@ function InventoryChart({ items }) {
       <div className="mt-5 h-72">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={chartData} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
-            <CartesianGrid stroke="#334155" strokeDasharray="3 3" vertical={false} />
-            <XAxis dataKey="item" tick={{ fill: '#94a3b8', fontSize: 12 }} tickLine={false} axisLine={false} />
-            <YAxis tick={{ fill: '#94a3b8', fontSize: 12 }} tickLine={false} axisLine={false} />
-            <Tooltip contentStyle={{ background: '#172033', border: '1px solid #334155', borderRadius: '8px' }} labelStyle={{ color: '#e2e8f0' }} itemStyle={{ color: '#e2e8f0' }} formatter={(value) => formatNumber(value)} />
-            <Legend wrapperStyle={{ color: '#94a3b8', fontSize: 12 }} />
-            <Bar dataKey="currentStock" name="Current Stock" fill="#4f8cff" radius={[4, 4, 0, 0]} />
-            <Bar dataKey="reorderLevel" name="Reorder Level" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+            <CartesianGrid stroke="var(--color-cg-chart-grid)" strokeDasharray="3 3" vertical={false} />
+            <XAxis dataKey="item" tick={{ fill: 'var(--color-cg-chart-axis)', fontSize: 12 }} tickLine={false} axisLine={false} />
+            <YAxis tick={{ fill: 'var(--color-cg-chart-axis)', fontSize: 12 }} tickLine={false} axisLine={false} />
+            <Tooltip contentStyle={{ background: 'var(--color-cg-card)', border: '1px solid var(--color-cg-border)', borderRadius: '8px' }} labelStyle={{ color: 'var(--color-cg-text)' }} itemStyle={{ color: 'var(--color-cg-text)' }} formatter={(value) => formatNumber(value)} />
+            <Legend wrapperStyle={{ color: 'var(--color-cg-muted)', fontSize: 12 }} />
+            <Bar dataKey="currentStock" name="Current Stock" fill="var(--color-cg-primary)" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="reorderLevel" name="Reorder Level" fill="var(--color-risk-medium)" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -173,12 +173,12 @@ export default function Inventory() {
       <PageHeader title="Inventory" description="Monitor stock levels, warehouse distribution, inventory health and replenishment status." />
 
       <Card>
-        <div className="grid gap-4 xl:grid-cols-6">
-          <label className="relative xl:col-span-2"><span className="sr-only">Search inventory</span><Search className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-cg-muted" /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search inventory item or ID" className="w-full rounded-cg border border-cg-border bg-cg-hover py-2 pl-9 pr-3 text-sm text-cg-text outline-none focus:border-cg-secondary" /></label>
-          <select value={warehouse} onChange={(event) => setWarehouse(event.target.value)} className="rounded-cg border border-cg-border bg-cg-hover px-3 py-2 text-sm text-cg-text"><option value="">All warehouses</option>{options.warehouses.map((item) => <option key={item} value={item}>{item}</option>)}</select>
-          <select value={category} onChange={(event) => setCategory(event.target.value)} className="rounded-cg border border-cg-border bg-cg-hover px-3 py-2 text-sm text-cg-text"><option value="">All categories</option>{options.categories.map((item) => <option key={item} value={item}>{item}</option>)}</select>
-          <select value={status} onChange={(event) => setStatus(event.target.value)} className="rounded-cg border border-cg-border bg-cg-hover px-3 py-2 text-sm text-cg-text"><option value="">All stock statuses</option>{options.statuses.map((item) => <option key={item} value={item}>{item}</option>)}</select>
-          <div className="flex gap-2"><select value={sort} onChange={(event) => setSort(event.target.value)} className="min-w-0 flex-1 rounded-cg border border-cg-border bg-cg-hover px-3 py-2 text-sm text-cg-text"><option value="item_id">Sort: Item ID</option><option value="item_name">Sort: Item</option><option value="category">Sort: Category</option><option value="warehouse">Sort: Warehouse</option><option value="current_stock">Sort: Current Stock</option><option value="reorder_point">Sort: Reorder Level</option><option value="utilization">Sort: Utilization</option><option value="status">Sort: Status</option><option value="last_updated">Sort: Last Updated</option></select><Button aria-label="Refresh inventory" onClick={refetch} disabled={loading}><RefreshCw className="h-4 w-4" /></Button></div>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          <label className="relative sm:col-span-2 xl:col-span-2"><span className="sr-only">Search inventory</span><Search className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-cg-muted" /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search inventory item or ID" className="w-full rounded-cg border border-cg-border bg-cg-hover py-2 pl-9 pr-3 text-sm text-cg-text outline-none focus:border-cg-secondary" /></label>
+          <select value={warehouse} onChange={(event) => setWarehouse(event.target.value)} className="min-w-0 rounded-cg border border-cg-border bg-cg-hover px-3 py-2 text-sm text-cg-text"><option value="">All warehouses</option>{options.warehouses.map((item) => <option key={item} value={item}>{item}</option>)}</select>
+          <select value={category} onChange={(event) => setCategory(event.target.value)} className="min-w-0 rounded-cg border border-cg-border bg-cg-hover px-3 py-2 text-sm text-cg-text"><option value="">All categories</option>{options.categories.map((item) => <option key={item} value={item}>{item}</option>)}</select>
+          <select value={status} onChange={(event) => setStatus(event.target.value)} className="min-w-0 rounded-cg border border-cg-border bg-cg-hover px-3 py-2 text-sm text-cg-text"><option value="">All stock statuses</option>{options.statuses.map((item) => <option key={item} value={item}>{item}</option>)}</select>
+          <div className="flex min-w-0 gap-2"><select value={sort} onChange={(event) => setSort(event.target.value)} className="min-w-0 flex-1 rounded-cg border border-cg-border bg-cg-hover px-3 py-2 text-sm text-cg-text"><option value="item_id">Sort: Item ID</option><option value="item_name">Sort: Item</option><option value="category">Sort: Category</option><option value="warehouse">Sort: Warehouse</option><option value="current_stock">Sort: Current Stock</option><option value="reorder_point">Sort: Reorder Level</option><option value="utilization">Sort: Utilization</option><option value="status">Sort: Status</option><option value="last_updated">Sort: Last Updated</option></select><Button className="shrink-0" aria-label="Refresh inventory" onClick={refetch} disabled={loading}><RefreshCw className="h-4 w-4" /></Button></div>
         </div>
       </Card>
 

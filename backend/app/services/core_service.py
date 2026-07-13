@@ -387,6 +387,100 @@ def get_inventory_summary(db: Session):
 def get_logistics(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Logistics).offset(skip).limit(limit).all()
 
+
+def get_network_overview(db: Session, country=None, supplier_id=None, product_id=None, risk_level=None):
+    """Build the operational supply network from the existing normalized records."""
+    suppliers = db.query(models.Supplier).all()
+    risks = {item.supplier_id: item for item in db.query(models.SupplierRiskScore).all()}
+    products = {item.product_id: item for item in db.query(models.Product).all()}
+    components = db.query(models.ProductComponent).all()
+    plants = db.query(models.ManufacturingPlant).all()
+    warehouses = db.query(models.Warehouse).all()
+    logistics = db.query(models.Logistics).all()
+    supplier_relationships = db.query(models.SupplierRelationship).all()
+    inventory = db.query(models.Inventory).all()
+
+    def matches(supplier):
+        risk = risks.get(supplier.supplier_id)
+        if country and supplier.country != country: return False
+        if supplier_id and supplier.supplier_id != supplier_id: return False
+        if risk_level and (not risk or str(risk.risk_level).lower() != risk_level.lower()): return False
+        if product_id and not any(c.product_id == product_id and c.supplier_id == supplier.supplier_id for c in components): return False
+        return True
+
+    visible_suppliers = [item for item in suppliers if matches(item)]
+    visible_ids = {item.supplier_id for item in visible_suppliers}
+    nodes, edges = [], []
+    def add_node(node_id, label, node_type, **data):
+        nodes.append({"id": node_id, "label": label, "type": node_type, **data})
+    def add_edge(source, target, relation, label=None):
+        if source != target:
+            edges.append({"id": f"{source}-{target}-{relation}", "source": source, "target": target, "relation": relation, "label": label or relation})
+
+    countries = set()
+    for supplier in visible_suppliers:
+        risk = risks.get(supplier.supplier_id)
+        country_id = f"country:{supplier.country}"
+        countries.add(supplier.country)
+        add_node(f"supplier:{supplier.supplier_id}", supplier.supplier_name or supplier.supplier_id, "supplier",
+                 supplier_id=supplier.supplier_id, country=supplier.country, risk_score=risk.risk_probability if risk else None,
+                 risk_level=risk.risk_level if risk else None, status=supplier.status, criticality=supplier.criticality)
+        add_node(country_id, supplier.country, "country", country=supplier.country)
+        add_edge(country_id, f"supplier:{supplier.supplier_id}", "located_in", "located in")
+    for component in components:
+        if component.supplier_id in visible_ids and (not product_id or component.product_id == product_id):
+            product = products.get(component.product_id)
+            if product:
+                add_node(f"product:{product.product_id}", product.model or product.product_id, "product", product_id=product.product_id, country=None)
+                add_edge(f"supplier:{component.supplier_id}", f"product:{product.product_id}", "supplies", component.component or "supplies")
+    for plant in plants:
+        if not country or plant.country == country:
+            add_node(f"plant:{plant.plant_id}", f"{plant.city or plant.plant_id} Plant", "plant", plant_id=plant.plant_id, country=plant.country, capacity=plant.capacity)
+            country_id = f"country:{plant.country}"; countries.add(plant.country)
+            add_node(country_id, plant.country, "country", country=plant.country)
+            add_edge(country_id, f"plant:{plant.plant_id}", "located_in", "located in")
+            for component in components:
+                if component.supplier_id in visible_ids: add_edge(f"product:{component.product_id}", f"plant:{plant.plant_id}", "manufactures", "manufacturing flow")
+    for warehouse in warehouses:
+        if not country or warehouse.country == country:
+            add_node(f"warehouse:{warehouse.warehouse_id}", f"{warehouse.city or warehouse.warehouse_id} Warehouse", "warehouse", warehouse_id=warehouse.warehouse_id, country=warehouse.country, inventory=warehouse.inventory)
+            country_id = f"country:{warehouse.country}"; countries.add(warehouse.country)
+            add_node(country_id, warehouse.country, "country", country=warehouse.country)
+            add_edge(country_id, f"warehouse:{warehouse.warehouse_id}", "located_in", "located in")
+            for plant in plants: add_edge(f"plant:{plant.plant_id}", f"warehouse:{warehouse.warehouse_id}", "distribution", "distribution")
+    for route in logistics:
+        if route.supplier_id in visible_ids:
+            target = next((w for w in warehouses if w.country == route.destination_country), None)
+            if target: add_edge(f"supplier:{route.supplier_id}", f"warehouse:{target.warehouse_id}", "logistics", f"{route.transport_method or 'Route'} · {route.transit_time_days or '—'}d")
+    for relationship in supplier_relationships:
+        if relationship.source_supplier in visible_ids and relationship.target_supplier in visible_ids:
+            add_edge(f"supplier:{relationship.source_supplier}", f"supplier:{relationship.target_supplier}", "supply_relationship", relationship.dependency_strength or "supply relationship")
+
+    # De-duplicate nodes and edges produced from shared relationships.
+    nodes = list({item['id']: item for item in nodes}.values())
+    edges = list({item['id']: item for item in edges}.values())
+    degrees = {node['id']: 0 for node in nodes}
+    for edge in edges:
+        degrees[edge['source']] = degrees.get(edge['source'], 0) + 1; degrees[edge['target']] = degrees.get(edge['target'], 0) + 1
+    supplier_nodes = [node for node in nodes if node['type'] == 'supplier']
+    highest = max(supplier_nodes, key=lambda n: n.get('risk_score') or 0, default=None)
+    connected = max(nodes, key=lambda n: degrees.get(n['id'], 0), default=None)
+    return {"nodes": nodes, "edges": edges,
+        "summary": {"total_suppliers": len(visible_suppliers), "manufacturing_plants": len(plants), "warehouses": len(warehouses), "logistics_routes": len([r for r in logistics if r.supplier_id in visible_ids]), "connected_countries": len(countries), "active_supply_links": len(edges)},
+        "statistics": {"most_connected_supplier": max(supplier_nodes, key=lambda n: degrees.get(n['id'], 0), default=None), "highest_risk_supplier": highest, "most_critical_node": connected, "longest_logistics_chain": max(logistics, key=lambda r: r.transit_time_days or 0, default=None)},
+        "components": [{"supplier": n['label'], "factory": next((p.city for p in plants if p.country == n.get('country')), None), "warehouse": next((w.warehouse_id for w in warehouses if w.country == n.get('country')), None), "product": next((products[c.product_id].model for c in components if c.supplier_id == n.get('supplier_id') and c.product_id in products), None), "country": n.get('country'), "risk_score": n.get('risk_score'), "status": n.get('status')} for n in supplier_nodes],
+        "charts": {"health": [{"name": level, "value": sum(str(n.get('risk_level') or 'Unknown').lower() == level.lower() for n in supplier_nodes)} for level in ['Low', 'Medium', 'High', 'Critical']], "country_connectivity": [{"name": c, "value": sum(n.get('country') == c and n['type'] == 'supplier' for n in nodes)} for c in sorted(countries)], "supplier_connectivity": [{"name": n['label'], "value": degrees.get(n['id'], 0)} for n in sorted(supplier_nodes, key=lambda x: degrees.get(x['id'], 0), reverse=True)[:8]], "risk_distribution": [{"name": n['label'], "value": round((n.get('risk_score') or 0) * 100, 1)} for n in supplier_nodes]}}
+
+
+def get_network_node_detail(db: Session, node_id: str):
+    if node_id.startswith('supplier:'):
+        supplier_id = node_id.split(':', 1)[1]
+        detail = get_supplier_detail(db, supplier_id)
+        inventory = db.query(models.Inventory).filter(models.Inventory.supplier_id == supplier_id).all()
+        detail['inventory'] = [{"warehouse": item.warehouse, "current_stock": item.current_stock, "safety_stock": item.safety_stock, "buffer_days": item.buffer_days} for item in inventory] if detail else []
+        return detail or {"id": node_id}
+    return {"id": node_id, "message": "Select a supplier node to view operational detail."}
+
 _NEWS_CATEGORY_MAP = {
     "financial": "Supplier Operational",
     "labor strike": "Logistics",

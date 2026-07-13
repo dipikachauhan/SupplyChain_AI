@@ -17,25 +17,25 @@ export default function Sidebar({ isOpen, onClose }) {
 
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-cg-border bg-cg-card transition-transform duration-200 lg:static lg:z-auto lg:translate-x-0',
+          'fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-white/10 bg-cg-sidebar text-cg-sidebar-text transition-transform duration-200 lg:static lg:z-auto lg:translate-x-0',
           isOpen ? 'translate-x-0' : '-translate-x-full',
         )}
       >
-        <div className="flex h-16 items-center justify-between border-b border-cg-border px-5">
+        <div className="flex h-16 items-center justify-between border-b border-white/10 px-5">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-cg bg-cg-primary">
-              <Shield className="h-5 w-5 text-cg-text" />
+            <div className="flex h-9 w-9 items-center justify-center rounded-cg bg-white/15">
+              <Shield className="h-5 w-5 text-white" />
             </div>
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-cg-text">{APP_NAME}</p>
-              <p className="truncate text-xs text-cg-muted">{APP_TAGLINE}</p>
+              <p className="truncate text-sm font-semibold text-cg-sidebar-text">{APP_NAME}</p>
+              <p className="truncate text-xs text-cg-sidebar-muted">{APP_TAGLINE}</p>
             </div>
           </div>
 
           <button
             type="button"
             onClick={onClose}
-            className="rounded-cg p-2 text-cg-muted transition-colors hover:bg-cg-hover hover:text-cg-text lg:hidden"
+            className="rounded-cg p-2 text-cg-sidebar-muted transition-colors hover:bg-cg-sidebar-hover hover:text-cg-sidebar-text lg:hidden"
             aria-label="Close navigation"
           >
             <X className="h-5 w-5" />
@@ -52,10 +52,10 @@ export default function Sidebar({ isOpen, onClose }) {
                   onClick={onClose}
                   className={({ isActive }) =>
                     cn(
-                      'flex items-center gap-3 rounded-cg px-3 py-2.5 text-sm font-medium transition-colors',
+                      'flex items-center gap-3 rounded-cg px-3 py-2.5 text-sm font-medium transition-all duration-150',
                       isActive
-                        ? 'bg-cg-primary text-cg-text'
-                        : 'text-cg-muted hover:bg-cg-hover hover:text-cg-text',
+                        ? 'bg-white/12 text-white shadow-sm ring-1 ring-white/10'
+                        : 'text-cg-sidebar-muted hover:bg-white/8 hover:text-cg-sidebar-text',
                     )
                   }
                 >
@@ -67,9 +67,9 @@ export default function Sidebar({ isOpen, onClose }) {
           </ul>
         </nav>
 
-        <div className="border-t border-cg-border px-5 py-4">
-          <p className="text-xs text-cg-muted">Enterprise Risk Intelligence</p>
-          <p className="mt-1 text-xs font-medium text-cg-secondary">v1.0.0</p>
+        <div className="border-t border-white/10 px-5 py-4">
+          <p className="text-xs text-cg-sidebar-muted">Enterprise Risk Intelligence</p>
+          <p className="mt-1 text-xs font-medium text-white/80">v1.0.0</p>
         </div>
       </aside>
     </>

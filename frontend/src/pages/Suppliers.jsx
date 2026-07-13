@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { ArrowUpDown, Eye, RefreshCw, Search, Users } from 'lucide-react'
 import { getSupplierById, getSuppliers } from '../api'
 import {
@@ -89,7 +90,16 @@ function SupplierDetails({ supplier, loading, error, onRetry }) {
           <h3 className="text-sm font-semibold text-cg-text">Recent news</h3>
           {recentNews.length ? (
             <ul className="mt-3 space-y-3 text-sm text-cg-muted">
-              {recentNews.map((item) => <li key={item.id}><p className="text-cg-text">{item.headline}</p><p className="mt-1 text-xs">{formatDate(item.date)}</p></li>)}
+              {recentNews.map((item) => (
+                <li key={item.id}>
+                  <p className="text-cg-text hover:text-cg-secondary transition-colors font-medium">
+                    <Link to={`/news?selectedId=${item.id}`}>
+                      {item.headline}
+                    </Link>
+                  </p>
+                  <p className="mt-1 text-xs">{formatDate(item.date)}</p>
+                </li>
+              ))}
             </ul>
           ) : <p className="mt-3 text-sm text-cg-muted">No recent news available.</p>}
         </div>
@@ -107,12 +117,30 @@ function SupplierDetails({ supplier, loading, error, onRetry }) {
 }
 
 export default function Suppliers() {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const querySupplierId = searchParams.get('supplier_id') || searchParams.get('selectedSupplierId')
+
   const [search, setSearch] = useState('')
   const [country, setCountry] = useState('')
   const [riskLevel, setRiskLevel] = useState('')
   const [criticality, setCriticality] = useState('')
   const [sortBy, setSortBy] = useState('supplier_name')
-  const [selectedSupplierId, setSelectedSupplierId] = useState(null)
+  const [localSelectedSupplierId, setLocalSelectedSupplierId] = useState(null)
+
+  const selectedSupplierId = querySupplierId || localSelectedSupplierId
+
+  const setSelectedSupplierId = (id) => {
+    const params = {}
+    if (search.trim()) params.q = search.trim()
+    if (country) params.country = country
+    if (riskLevel) params.risk_level = riskLevel
+    if (criticality) params.criticality = criticality
+    if (id) {
+      params.supplier_id = id
+    }
+    setSearchParams(params)
+    setLocalSelectedSupplierId(id)
+  }
 
   const fetchSuppliers = useCallback(
     () => getSuppliers({

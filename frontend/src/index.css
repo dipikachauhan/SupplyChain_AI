@@ -1,16 +1,24 @@
 @import "tailwindcss";
 
 @theme {
-  --color-cg-bg: #212a31;
-  --color-cg-card: #2e3944;
-  --color-cg-primary: #124e66;
-  --color-cg-secondary: #748d92;
-  --color-cg-text: #d3d9d4;
-  --color-cg-muted: #9aa8a3;
-  --color-cg-border: #3d4a54;
-  --color-cg-hover: #36424c;
+  --color-cg-bg: #F5F7FA;
+  --color-cg-card: #FFFFFF;
+  --color-cg-primary: #2563EB;
+  --color-cg-primary-hover: #3B82F6;
+  --color-cg-secondary: #2563EB;
+  --color-cg-text: #1F2937;
+  --color-cg-muted: #6B7280;
+  --color-cg-border: #E5E7EB;
+  --color-cg-hover: #F3F4F6;
+  --color-cg-sidebar: #1E3A5F;
+  --color-cg-sidebar-hover: #294B73;
+  --color-cg-sidebar-text: #FFFFFF;
+  --color-cg-sidebar-muted: #C7D5E5;
+  --color-cg-chart-grid: #E5E7EB;
+  --color-cg-chart-axis: #6B7280;
+  --color-cg-chart-series-muted: #94A3B8;
 
-  --color-risk-safe: #22c55e;
+  --color-risk-safe: #10B981;
   --color-risk-medium: #f59e0b;
   --color-risk-high: #ef4444;
 
@@ -39,8 +47,20 @@
     color: var(--color-cg-text);
   }
 
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+
   #root {
     min-height: 100vh;
+  }
+
+  :focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--color-cg-secondary) 60%, white);
+    outline-offset: 2px;
   }
 
   ::-webkit-scrollbar {
@@ -49,15 +69,15 @@
   }
 
   ::-webkit-scrollbar-track {
-    background: var(--color-cg-bg);
+    background: var(--color-cg-hover);
   }
 
   ::-webkit-scrollbar-thumb {
-    background: var(--color-cg-border);
+    background: var(--color-cg-chart-series-muted);
     border-radius: 4px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: var(--color-cg-secondary);
+    background: var(--color-cg-primary);
   }
 }

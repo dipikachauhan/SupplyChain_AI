@@ -20,7 +20,7 @@ export default function ErrorState({
           <button
             type="button"
             onClick={onRetry}
-            className="inline-flex items-center gap-2 rounded-cg border border-cg-border bg-cg-hover px-3 py-2 text-sm font-medium text-cg-text transition-colors hover:border-cg-secondary hover:text-white"
+            className="inline-flex items-center gap-2 rounded-cg border border-cg-border bg-cg-hover px-3 py-2 text-sm font-medium text-cg-text transition-colors hover:border-cg-secondary hover:text-cg-secondary"
           >
             <RefreshCw className="h-4 w-4" />
             Retry

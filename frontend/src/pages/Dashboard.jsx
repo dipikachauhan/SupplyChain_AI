@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from 'react'
+import { Link } from 'react-router-dom'
 import {
   AlertTriangle,
   Boxes,
@@ -59,17 +60,17 @@ function SectionHeader({ title, subtitle }) {
 
 function KpiCard({ title, value, description, icon: Icon, accent = 'text-cg-secondary' }) {
   return (
-    <Card className="min-h-32">
+    <Card className="h-full">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-sm font-medium text-cg-muted">{title}</p>
-          <p className="mt-3 text-3xl font-semibold text-cg-text">{value}</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-cg-muted">{title}</p>
+          <p className="mt-2 text-2xl font-semibold text-cg-text">{value}</p>
         </div>
         <div className="flex h-10 w-10 items-center justify-center rounded-cg border border-cg-border bg-cg-hover">
           <Icon className={`h-5 w-5 ${accent}`} />
         </div>
       </div>
-      <p className="mt-4 text-sm text-cg-muted">{description}</p>
+      <p className="mt-3 text-sm leading-6 text-cg-muted">{description}</p>
     </Card>
   )
 }
@@ -214,8 +215,10 @@ function LatestNewsCard({ news }) {
                 <RiskBadge level={item.severity} label={item.severity || 'Unknown'} />
                 <span className="text-xs text-cg-muted">{formatDate(item.date)}</span>
               </div>
-              <h3 className="text-sm font-semibold leading-6 text-cg-text">
-                {item.headline || 'Untitled event'}
+              <h3 className="text-sm font-semibold leading-6 text-cg-text hover:text-cg-secondary transition-colors">
+                <Link to={`/news?selectedId=${item.id}`}>
+                  {item.headline || 'Untitled event'}
+                </Link>
               </h3>
               <p className="mt-1 text-sm text-cg-muted">
                 {[item.country, item.risk_category, item.status].filter(Boolean).join(' / ') ||
@@ -494,8 +497,10 @@ export default function Dashboard() {
                     <p className="text-xs uppercase tracking-wide text-cg-muted">
                       {item.country || 'Global'} / {item.risk_category || 'Risk event'}
                     </p>
-                    <p className="mt-2 text-sm font-medium leading-6 text-cg-text">
-                      {truncateText(item.headline || 'Untitled event', 96)}
+                    <p className="mt-2 text-sm font-medium leading-6 text-cg-text hover:text-cg-secondary transition-colors">
+                      <Link to={`/news?selectedId=${item.id}`}>
+                        {truncateText(item.headline || 'Untitled event', 96)}
+                      </Link>
                     </p>
                   </div>
                 ))}
